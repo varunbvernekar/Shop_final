@@ -1,0 +1,118 @@
+<div class="customizer-root">
+  <button
+    (click)="back.emit()"
+    class="customizer-back"
+  >
+    ← Back to Catalog
+  </button>
+
+  <div class="customizer-grid">
+    <!-- Left preview -->
+    <div class="customizer-preview-card">
+      <div class="customizer-preview-image-wrapper">
+        <img
+          [src]="product.previewImage"
+          [alt]="product.name"
+          class="customizer-preview-image"
+        />
+        <div class="customizer-preview-badge">Preview</div>
+      </div>
+
+      <div class="customizer-summary">
+        <h4>Your Customization</h4>
+        <p>Color: {{ selectedColor || '–' }}</p>
+        <p>Size: {{ selectedSize || '–' }}</p>
+        <p>Material: {{ selectedMaterial || '–' }}</p>
+      </div>
+    </div>
+
+    <!-- Right options -->
+    <div class="customizer-options-card">
+      <div class="customizer-header">
+        <h2>{{ product.name }}</h2>
+        <p *ngIf="product.description">{{ product.description }}</p>
+      </div>
+
+      <div class="customizer-pricing">
+        <div class="row">
+          <span>Base Price:</span>
+          <span class="strike">${{ product.basePrice.toFixed(2) }}</span>
+        </div>
+        <div class="row total-row">
+          <span>Total Price:</span>
+          <span class="total-price">${{ totalPrice.toFixed(2) }}</span>
+        </div>
+      </div>
+
+      <!-- Colors -->
+      <div class="customizer-section" *ngIf="colourValues.length">
+        <label>Select Color</label>
+        <div class="option-grid option-grid-3">
+          <button
+            *ngFor="let color of colourValues"
+            type="button"
+            (click)="selectColour(color)"
+            [class.option-selected]="selectedColor === color"
+            class="option-pill"
+          >
+            {{ color }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Sizes -->
+      <div class="customizer-section" *ngIf="sizeValues.length">
+        <label>Select Size</label>
+        <div class="option-grid option-grid-5">
+          <button
+            *ngFor="let size of sizeValues"
+            type="button"
+            (click)="selectSize(size)"
+            [class.option-selected]="selectedSize === size"
+            class="option-pill"
+          >
+            {{ size }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Materials -->
+      <div class="customizer-section" *ngIf="materialValues.length">
+        <label>Select Material</label>
+        <div class="material-list">
+          <button
+            *ngFor="let m of materialValues"
+            type="button"
+            (click)="selectMaterial(m)"
+            class="material-item"
+            [class.option-selected]="selectedMaterial === m"
+          >
+            <span>{{ m }}</span>
+            <span *ngIf="selectedMaterial === m">✔</span>
+          </button>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        (click)="handleAddToCart()"
+        class="customizer-add-btn"
+      >
+        🛒 Add to Cart
+      </button>
+
+      <div
+        *ngIf="showSuccess"
+        class="customizer-success"
+      >
+        ✔ Added to cart successfully!
+      </div>
+
+      <div class="customizer-delivery">
+        <h4>Delivery Information</h4>
+        <p>Handmade products typically take 7–14 days for crafting and delivery.</p>
+        <p>Exact timeline will be provided after order confirmation.</p>
+      </div>
+    </div>
+  </div>
+</div>

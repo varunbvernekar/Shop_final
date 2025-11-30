@@ -1,0 +1,72 @@
+<div class="catalog-root">
+  <!-- Search + filters -->
+  <div class="catalog-filters">
+    <div class="catalog-search-wrapper">
+      <span class="catalog-search-icon">🔍</span>
+      <input
+        type="text"
+        placeholder="Search products..."
+        [(ngModel)]="searchTerm"
+        class="catalog-search-input"
+      />
+    </div>
+
+    <div class="catalog-category-wrapper">
+      <select
+        [(ngModel)]="selectedCategory"
+        class="catalog-category-select"
+      >
+        <option *ngFor="let category of categories">{{ category }}</option>
+      </select>
+      <span class="catalog-category-arrow">▼</span>
+    </div>
+  </div>
+
+  <!-- Product cards -->
+  <div class="catalog-grid">
+    <button
+      *ngFor="let product of filteredProducts"
+      type="button"
+      (click)="select(product)"
+      class="catalog-card"
+    >
+      <img
+        [src]="product.previewImage"
+        [alt]="product.name"
+        (error)="onImageError($event)"
+        class="catalog-card-image"
+      />
+
+      <div class="catalog-card-body">
+        <div class="catalog-card-header">
+          <h3 class="catalog-card-title">{{ product.name }}</h3>
+          <span class="catalog-card-price">${{ product.basePrice }}</span>
+        </div>
+
+        <p class="catalog-card-description" *ngIf="product.description">
+          {{ product.description }}
+        </p>
+
+        <div class="catalog-card-footer">
+          <span
+            *ngIf="product.category"
+            class="catalog-card-chip"
+          >
+            {{ product.category }}
+          </span>
+
+          <span class="catalog-card-customize">
+            Customize →
+          </span>
+        </div>
+      </div>
+    </button>
+  </div>
+
+  <div
+    *ngIf="filteredProducts.length === 0"
+    class="catalog-empty"
+  >
+    No products found matching your criteria.
+  </div>
+</div>

@@ -1,0 +1,184 @@
+<!-- src/app/components/admin/admin-dashboard/admin-dashboard.html -->
+
+<div class="dashboard-container">
+  <h1 class="dashboard-title">Admin Dashboard</h1>
+  <p class="dashboard-subtitle">
+    Manage inventory, monitor orders, and track business metrics
+  </p>
+
+  <!-- Top metric cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-orders">🛒</div>
+      <div class="stat-label">Total Orders</div>
+      <div class="stat-value">{{ totalOrders }}</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-revenue">$</div>
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value">${{ totalRevenue }}</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-avg">📈</div>
+      <div class="stat-label">Avg Order Value</div>
+      <div class="stat-value">${{ avgOrderValue }}</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon stat-icon-products">👥</div>
+      <div class="stat-label">Active Products</div>
+      <div class="stat-value">{{ activeProductsCount }}</div>
+    </div>
+  </div>
+
+  <!-- Low stock alerts -->
+  <div class="low-stock-card" *ngIf="lowStockProducts.length">
+    <div class="low-stock-header">
+      <div class="low-stock-title">
+        <span class="warning-icon">⚠️</span>
+        Low Stock Alerts
+      </div>
+      <div class="low-stock-subtitle">
+        {{ lowStockProducts.length }} product(s) need immediate attention
+      </div>
+    </div>
+
+    <div class="low-stock-list">
+      <div class="low-stock-item" *ngFor="let p of lowStockProducts">
+        <div class="low-stock-info">
+          <div class="low-stock-name">{{ p.name }}</div>
+          <div class="low-stock-meta">
+            Stock:
+            <span class="stock-value">{{ p.stockLevel }} units</span>
+            &nbsp; (Threshold:
+            <span class="threshold-value">{{ p.reorderThreshold }}</span>)
+          </div>
+        </div>
+        <button class="reorder-btn">Reorder Now</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-main-grid">
+    <!-- Inventory table -->
+    <div class="inventory-card">
+      <h2 class="section-title">Inventory Status</h2>
+
+      <div class="table-wrapper">
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Stock Level</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of products">
+              <td>
+                <div class="product-cell">
+                  <div class="product-name">{{ p.name }}</div>
+                  <div class="product-id">{{ p.productId }}</div>
+                </div>
+              </td>
+              <td>
+                <span class="stock-icon">📦</span>
+                {{ p.stockLevel || 0 }} units
+              </td>
+              <td>
+                <span [class]="getStatusClass(p)">
+                  {{ getStatusLabel(p) }}
+                </span>
+              </td>
+              <td>
+                <button class="manage-link">Manage</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Add product form -->
+    <div class="add-product-card">
+      <h2 class="section-title">Add New Product</h2>
+
+      <form (ngSubmit)="onAddProduct()" class="product-form">
+        <div class="form-row">
+          <label>Product Name</label>
+          <input type="text" [(ngModel)]="newProduct.name" name="name" required />
+        </div>
+
+        <div class="form-row">
+          <label>Category</label>
+          <input
+            type="text"
+            [(ngModel)]="newProduct.category"
+            name="category"
+            placeholder="Jewelry, Home Decor..."
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Base Price ($)</label>
+          <input
+            type="number"
+            [(ngModel)]="newProduct.basePrice"
+            name="basePrice"
+            min="0"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Preview Image URL</label>
+          <input
+            type="text"
+            [(ngModel)]="newProduct.previewImage"
+            name="previewImage"
+            placeholder="assets/images/your-image.jpg"
+          />
+        </div>
+
+        <div class="form-row">
+          <label>Description</label>
+          <textarea
+            rows="3"
+            [(ngModel)]="newProduct.description"
+            name="description"
+            placeholder="Short description of the product"
+          ></textarea>
+        </div>
+
+        <div class="form-row-inline">
+          <div class="inline-item">
+            <label>Stock Level</label>
+            <input
+              type="number"
+              [(ngModel)]="newProduct.stockLevel"
+              name="stockLevel"
+              min="0"
+            />
+          </div>
+
+          <div class="inline-item">
+            <label>Reorder Threshold</label>
+            <input
+              type="number"
+              [(ngModel)]="newProduct.reorderThreshold"
+              name="reorderThreshold"
+              min="0"
+            />
+          </div>
+        </div>
+
+        <button class="primary-btn" type="submit">
+          Add Product
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

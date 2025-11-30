@@ -1,0 +1,243 @@
+.customizer-root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.customizer-back {
+  padding: 4px 0;
+  border: none;
+  background: none;
+  font-size: 13px;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.customizer-back:hover {
+  color: #111827;
+}
+
+.customizer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .customizer-grid {
+    grid-template-columns: 1.05fr 1.1fr;
+  }
+}
+
+.customizer-preview-card,
+.customizer-options-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  padding: 18px;
+}
+
+.customizer-preview-image-wrapper {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.customizer-preview-image {
+  display: block;
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+}
+
+.customizer-preview-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  font-size: 11px;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
+  color: #374151;
+}
+
+.customizer-summary {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #eff6ff;
+  font-size: 13px;
+  color: #334155;
+}
+
+.customizer-summary h4 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.customizer-summary p {
+  margin: 2px 0;
+}
+
+/* Options card */
+.customizer-header h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.customizer-header p {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.customizer-pricing {
+  margin: 16px 0 18px;
+  font-size: 13px;
+}
+
+.customizer-pricing .row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.customizer-pricing .strike {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+.customizer-pricing .total-row span:first-child {
+  font-weight: 500;
+  color: #111827;
+}
+
+.customizer-pricing .total-price {
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+/* Sections */
+.customizer-section {
+  margin-bottom: 16px;
+}
+
+.customizer-section label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Options */
+.option-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.option-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.option-grid-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.option-pill {
+  padding: 7px 6px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 12px;
+  color: #1f2933;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.option-pill:hover {
+  border-color: #cbd5f5;
+}
+
+.option-selected {
+  border-color: #4f46e5 !important;
+  background-color: #eef2ff !important;
+  color: #4338ca !important;
+  box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.2);
+}
+
+/* Material list */
+.material-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.material-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 13px;
+  color: #111827;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.material-item:hover {
+  border-color: #cbd5f5;
+}
+
+/* Add button */
+.customizer-add-btn {
+  margin-top: 4px;
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  background-color: #4f46e5;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.customizer-add-btn:hover {
+  background-color: #4338ca;
+}
+
+/* Success + delivery */
+.customizer-success {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #bbf7d0;
+  background-color: #ecfdf3;
+  font-size: 12px;
+  color: #15803d;
+}
+
+.customizer-delivery {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  font-size: 12px;
+  color: #475569;
+}
+
+.customizer-delivery h4 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}

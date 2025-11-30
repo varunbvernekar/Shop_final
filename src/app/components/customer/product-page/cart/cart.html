@@ -1,0 +1,151 @@
+<!-- Empty state -->
+<div *ngIf="items.length === 0; else cartView" class="cart-root">
+  <h2 class="cart-title">Shopping Cart</h2>
+
+  <div class="cart-empty-card">
+    <div class="cart-empty-icon">🛍️</div>
+    <h3>Your cart is empty</h3>
+    <p>Discover our unique handmade products and add them to your cart.</p>
+
+    <button
+      type="button"
+      (click)="continueShopping.emit()"
+      class="btn-primary"
+    >
+      ← Start Shopping
+    </button>
+  </div>
+</div>
+
+<!-- Cart view -->
+<ng-template #cartView>
+  <div class="cart-root">
+    <div class="cart-header">
+      <h2 class="cart-title">
+        Shopping Cart ({{ items.length }}
+        {{ items.length === 1 ? 'item' : 'items' }})
+      </h2>
+
+      <button
+        type="button"
+        (click)="continueShopping.emit()"
+        class="cart-continue"
+      >
+        ← Continue Shopping
+      </button>
+    </div>
+
+    <div class="cart-grid">
+      <!-- Items -->
+      <div class="cart-items">
+        <div
+          *ngFor="let item of items"
+          class="cart-item-card"
+        >
+          <img
+            [src]="item.product.previewImage"
+            [alt]="item.product.name"
+            class="cart-item-image"
+          />
+
+          <div class="cart-item-main">
+            <div class="cart-item-header">
+              <div>
+                <h3>{{ item.product.name }}</h3>
+                <span class="cart-chip">
+                  {{ item.product.category || 'Jewelry' }}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                (click)="removeItem.emit(item.id)"
+                class="cart-remove"
+                aria-label="Remove item"
+              >
+                🗑️
+              </button>
+            </div>
+
+            <div class="cart-item-details">
+              <p>Color: {{ item.customization.color }}</p>
+              <p>Size: {{ item.customization.size }}</p>
+              <p>Material: {{ item.customization.material }}</p>
+            </div>
+
+            <div class="cart-item-footer">
+              <div class="cart-qty">
+                <button
+                  type="button"
+                  (click)="decrease(item)"
+                >
+                  −
+                </button>
+                <span>{{ item.quantity }}</span>
+                <button
+                  type="button"
+                  (click)="increase(item)"
+                >
+                  +
+                </button>
+              </div>
+
+              <div class="cart-item-price">
+                <p class="each">
+                  ${{ item.price.toFixed(2) }} each
+                </p>
+                <p class="total">
+                  ${{ (item.price * item.quantity).toFixed(2) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="cart-summary-card">
+        <h3>Order Summary</h3>
+
+        <div class="cart-summary-rows">
+          <div class="row">
+            <span>Subtotal</span>
+            <span>${{ subtotal.toFixed(2) }}</span>
+          </div>
+          <div class="row">
+            <span>Tax (10%)</span>
+            <span>${{ tax.toFixed(2) }}</span>
+          </div>
+          <div class="row">
+            <span>Shipping</span>
+            <span>${{ shipping.toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <div class="cart-summary-total">
+          <span>Total</span>
+          <span>${{ total.toFixed(2) }}</span>
+        </div>
+
+        <button
+          type="button"
+          (click)="handleCheckout()"
+          class="btn-primary full"
+        >
+          💳 Proceed to Checkout
+        </button>
+
+        <div class="cart-delivery">
+          <p class="title">Estimated Delivery</p>
+          <p>7–14 business days</p>
+          <p>Handmade products are crafted with care.</p>
+        </div>
+
+        <div class="cart-secure">
+          <p>🔒 Secure Checkout</p>
+          <p>Powered by Razorpay &amp; Stripe</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,47 @@
+<!-- product-page.html -->
+<div class="page-wrapper">
+  <div class="page-container">
+    <!-- CUSTOMER EXPERIENCE -->
+    <ng-container *ngIf="role === 'CUSTOMER'; else staffView">
+
+      <header class="page-header">
+        <h1 class="page-title">Product Catalog</h1>
+        <p class="page-subtitle">
+          Discover our curated collection of handmade, customized, and limited-edition products.
+        </p>
+      </header>
+
+      <ng-container [ngSwitch]="view">
+        <ng-container *ngSwitchCase="'catalog'">
+          <app-product-catalog
+            [products]="products"
+            (productSelect)="handleSelectProduct($event)">
+          </app-product-catalog>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'customizer'">
+          <app-product-customizer
+            *ngIf="selectedProduct"
+            [product]="selectedProduct"
+            (back)="handleBackToCatalog()"
+            (addToCart)="handleAddToCart($event)">
+          </app-product-customizer>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'cart'">
+          <app-cart
+            [items]="cartItems"
+            (updateQuantity)="handleUpdateQuantity($event)"
+            (removeItem)="handleRemoveItem($event)"
+            (continueShopping)="handleContinueShopping()">
+          </app-cart>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+
+    <!-- keep your vendor/admin template here if you want -->
+    <ng-template #staffView>
+      <!-- existing vendor/admin UI -->
+    </ng-template>
+  </div>
+</div>

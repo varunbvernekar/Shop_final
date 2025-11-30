@@ -1,0 +1,132 @@
+<div class="orders-page">
+  <header class="orders-header">
+    <h1>Order Tracking</h1>
+    <p>Track your orders and view delivery status</p>
+  </header>
+
+  <div class="orders-layout">
+    <!-- Left: order list -->
+    <aside class="orders-list">
+      <h2 class="panel-title">Your Orders</h2>
+
+      <div
+        *ngFor="let order of orders"
+        class="order-list-item"
+        [class.active]="order === selectedOrder"
+        (click)="selectOrder(order)"
+      >
+        <div class="order-list-main">
+          <div class="order-id">{{ order.id }}</div>
+          <div class="order-status-chip" [ngClass]="order.status">
+            {{ order.status }}
+          </div>
+        </div>
+
+        <div class="order-list-meta">
+          <span>{{ order.placedOn }}</span>
+          <span class="amount">${{ order.amount }}</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right: details -->
+    <section class="orders-detail" *ngIf="selectedOrder; else emptyState">
+      <div class="order-card">
+        <div class="order-card-header">
+          <div>
+            <h2>Order {{ selectedOrder.id }}</h2>
+            <p>Placed on {{ selectedOrder.placedOn }}</p>
+          </div>
+
+          <div class="order-status-chip large" [ngClass]="selectedOrder.status">
+            {{ selectedOrder.status }}
+          </div>
+        </div>
+
+        <!-- product row -->
+        <div class="order-product">
+          <img
+            [src]="selectedOrder.product.image"
+            [alt]="selectedOrder.product.name"
+          />
+          <div class="order-product-info">
+            <h3>{{ selectedOrder.product.name }}</h3>
+            <p>Color: {{ selectedOrder.product.color }}</p>
+            <p>Size: {{ selectedOrder.product.size }}</p>
+            <p>Material: {{ selectedOrder.product.material }}</p>
+          </div>
+          <div class="order-product-amount">
+            ${{ selectedOrder.amount }}
+          </div>
+        </div>
+
+        <!-- timeline -->
+        <div class="order-timeline">
+          <h3>Order Timeline</h3>
+
+          <div class="timeline-steps">
+            <div
+              class="timeline-step"
+              *ngFor="let step of orderSteps"
+              [class.completed]="isStepCompleted(selectedOrder, step)"
+              [class.current]="isCurrentStatus(selectedOrder, step)"
+            >
+              <div class="timeline-icon"></div>
+              <div class="timeline-label">
+                <div>{{ step }}</div>
+                <small *ngIf="isCurrentStatus(selectedOrder, step)">
+                  Current Status
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- estimated delivery -->
+        <div class="order-estimate">
+          <div class="estimate-title">Estimated Delivery</div>
+          <div class="estimate-date">
+            {{ selectedOrder.estimatedDelivery }}
+          </div>
+        </div>
+      </div>
+
+      <!-- shipment tracking -->
+      <div class="shipment-card">
+        <h3>Shipment Tracking</h3>
+
+        <div class="shipment-row">
+          <div>
+            <p class="label">Carrier</p>
+            <p>{{ selectedOrder.carrier }}</p>
+          </div>
+          <a href="javascript:void(0)" class="track-link">Track Package</a>
+        </div>
+
+        <div class="shipment-row">
+          <div>
+            <p class="label">Current Location</p>
+            <p>{{ selectedOrder.currentLocation }}</p>
+          </div>
+        </div>
+
+        <div class="shipment-row">
+          <div>
+            <p class="label">Tracking ID</p>
+            <p>{{ selectedOrder.trackingId }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Placeholder when nothing selected -->
+    <ng-template #emptyState>
+      <section class="orders-detail empty">
+        <div class="empty-box">
+          <div class="empty-icon">📦</div>
+          <p>Select an order to view details</p>
+        </div>
+      </section>
+    </ng-template>
+  </div>
+</div>
