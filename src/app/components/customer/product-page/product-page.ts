@@ -36,16 +36,25 @@ export class ProductPage implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.products = this.productService.getProducts();
+    // Load products via HTTP from db.json
+    this.productService.getProducts().subscribe({
+      next: products => {
+        this.products = products;
+      },
+      error: err => {
+        console.error('Failed to load products', err);
+      }
+    });
+
     const user = this.authService.getCurrentUser();
     this.role = user?.role ?? null;
 
-    // React to ?view=cart when navbar cart icon is clicked
+    // Handle ?view=cart|catalog|customizer for navbar/cart link
     this.route.queryParamMap.subscribe(params => {
       const viewParam = params.get('view') as CustomerView | null;
       if (viewParam === 'cart' || viewParam === 'catalog' || viewParam === 'customizer') {
         this.view = viewParam;
-      } else if (!this.view) {
+      } else {
         this.view = 'catalog';
       }
     });
@@ -57,6 +66,8 @@ export class ProductPage implements OnInit {
   }
 
   // ----- CUSTOMER flow -----
+
+  // 👇 This is what the template expects: (productSelect)="handleSelectProduct($event)"
   handleSelectProduct(product: Product): void {
     if (this.role !== 'CUSTOMER') {
       return;
@@ -80,36 +91,37 @@ export class ProductPage implements OnInit {
     const item: CartItem = {
       id,
       product: event.product,
-      customization: event.customization,
-      price: event.price,
-      quantity: 1
+      quantity: 1,
+      customization: {
+        color: event.customization.color,
+        size: event.customization.size,
+        material: event.customization.material
+      },
+      price: event.price
     };
 
-    // ✅ Only update cart, do NOT auto-navigate to cart
     this.cartService.addItem(item);
+    this.view = 'cart';
   }
 
-  handleUpdateQuantity(update: { itemId: string; quantity: number }): void {
-    this.cartService.updateQuantity(update.itemId, update.quantity);
+  // Cart component emits { itemId, quantity }
+  handleUpdateQuantity(event: { itemId: string; quantity: number }): void {
+    this.cartService.updateQuantity(event.itemId, event.quantity);
   }
 
-  handleRemoveItem(itemId: string): void {
-    this.cartService.removeItem(itemId);
+  handleRemoveItem(id: string): void {
+    this.cartService.removeItem(id);
   }
 
   handleContinueShopping(): void {
     this.view = 'catalog';
   }
 
-  // ----- Non-customer role actions -----
-  editProduct(product: Product): void {
-    alert(`Vendor: Edit listing for "${product.name}".`);
+  handleCheckout(): void {
+    alert('Checkout flow not implemented yet.');
   }
 
-  duplicateProduct(product: Product): void {
-    alert(`Vendor: Duplicate listing for "${product.name}".`);
-  }
-
+  // Admin/Vendor placeholder actions (if you use staffView template)
   viewProductInsights(product: Product): void {
     alert(`Admin: Viewing insights for "${product.name}".`);
   }

@@ -19,6 +19,7 @@ export class Register {
   password = '';
   confirmPassword = '';
   role: UserRole = 'CUSTOMER';
+
   errorMessage = '';
 
   constructor(
@@ -46,16 +47,19 @@ export class Register {
       role: this.role
     };
 
-    const success = this.authService.register(user);
-
-    if (success) {
-      // ✅ Do NOT open product page directly
-      // Go back to login with a "registered=true" flag
-      this.router.navigate(['/login'], {
-        queryParams: { registered: 'true' }
-      });
-    } else {
-      this.errorMessage = 'A user with this email already exists.';
-    }
+    this.authService.register(user).subscribe({
+      next: success => {
+        if (success) {
+          this.router.navigate(['/login'], {
+            queryParams: { registered: 'true' }
+          });
+        } else {
+          this.errorMessage = 'A user with this email already exists.';
+        }
+      },
+      error: () => {
+        this.errorMessage = 'Something went wrong during registration.';
+      }
+    });
   }
 }

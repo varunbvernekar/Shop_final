@@ -15,6 +15,7 @@ import { AuthService } from '../../../services/auth';
 export class Login implements OnInit {
   email = '';
   password = '';
+
   errorMessage = '';
   successMessage = '';
 
@@ -25,37 +26,33 @@ export class Login implements OnInit {
   ) {}
 
   ngOnInit(): void {
-  // 👇 If already logged in, skip login page
-  if (this.authService.isLoggedIn()) {
-    this.router.navigate(['/products']);
-    return;
+    this.route.queryParamMap.subscribe(params => {
+      const registered = params.get('registered');
+      if (registered === 'true') {
+        this.successMessage = 'Registration successful. Please log in.';
+      }
+    });
   }
-
-  // If user just registered, show confirmation message
-  this.route.queryParamMap.subscribe(params => {
-    const registered = params.get('registered');
-    if (registered === 'true') {
-      this.successMessage =
-        'Registration successful. Please login with your new credentials.';
-    }
-  });
-}
 
   onSubmit(): void {
     this.errorMessage = '';
-    this.successMessage = '';
 
     if (!this.email || !this.password) {
       this.errorMessage = 'Email and password are required.';
       return;
     }
 
-    const success = this.authService.login(this.email, this.password);
-
-    if (success) {
-      this.router.navigate(['/products']);
-    } else {
-      this.errorMessage = 'Invalid email or password. Please try again.';
-    }
+    this.authService.login(this.email, this.password).subscribe({
+      next: success => {
+        if (success) {
+          this.router.navigate(['/products']);
+        } else {
+          this.errorMessage = 'Invalid email or password. Please try again.';
+        }
+      },
+      error: () => {
+        this.errorMessage = 'Something went wrong during login. Please try again.';
+      }
+    });
   }
 }

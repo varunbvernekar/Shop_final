@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { User } from '../models/user';
+import { Observable, of, map, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -7,89 +9,58 @@ import { User } from '../models/user';
 export class AuthService {
   private currentUser: User | null = null;
 
-  private readonly USERS_KEY = 'mockUsers';
-  private readonly CURRENT_USER_KEY = 'currentUser';
+  private readonly apiUrl = 'http://localhost:3000';
 
-  constructor() {
-    const storage = this.storage;
-    if (storage) {
-      const raw = storage.getItem(this.CURRENT_USER_KEY);
-      if (raw) {
-        this.currentUser = JSON.parse(raw);
-      }
-    }
-  }
+  constructor(private http: HttpClient) {}
 
-  // ---- Helpers for safe localStorage access (works with SSR too) ----
-  private get storage(): Storage | null {
-    if (typeof window === 'undefined') {
-      return null;
-    }
-    return window.localStorage ?? null;
-  }
+  /**
+   * Register a new user via db.json (/users).
+   * Returns true if registered, false if email already exists.
+   */
+  register(user: User): Observable<boolean> {
+    return this.http.get<User[]>(`${this.apiUrl}/users`).pipe(
+      switchMap(users => {
+        const exists = users.some(u => u.email === user.email);
+        if (exists) {
+          return of(false);
+        }
 
-  private getUsers(): User[] {
-    const storage = this.storage;
-    if (!storage) {
-      return [];
-    }
-    const raw = storage.getItem(this.USERS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  }
+        const maxId = users.reduce((max, u) => Math.max(max, u.id ?? 0), 0);
+        const payload: User = {
+          ...user,
+          id: maxId + 1
+        };
 
-  private saveUsers(users: User[]): void {
-    const storage = this.storage;
-    if (!storage) return;
-    storage.setItem(this.USERS_KEY, JSON.stringify(users));
-  }
-
-  // ---- Public API ----
-
-  // 👇 Register ONLY saves the user, does NOT log them in
-  register(user: User): boolean {
-    const users = this.getUsers();
-
-    const exists = users.some(u => u.email === user.email);
-    if (exists) {
-      return false;
-    }
-
-    user.id = users.length + 1;
-    users.push(user);
-    this.saveUsers(users);
-
-    // Do NOT set currentUser here: user must login manually
-    return true;
-  }
-
-  // Login checks credentials against registered users
-  login(email: string, password: string): boolean {
-    const users = this.getUsers();
-
-    const found = users.find(
-      u => u.email === email && u.password === password
+        return this.http.post<User>(`${this.apiUrl}/users`, payload).pipe(
+          map(() => true)
+        );
+      })
     );
+  }
 
-    if (!found) {
-      return false;
-    }
+  /**
+   * Login against /users in db.json.
+   * Sets currentUser in memory (no windowStorage).
+   */
+  login(email: string, password: string): Observable<boolean> {
+    return this.http.get<User[]>(`${this.apiUrl}/users`).pipe(
+      map(users => {
+        const found = users.find(
+          u => u.email === email && u.password === password
+        );
 
-    this.currentUser = found;
+        if (!found) {
+          return false;
+        }
 
-    const storage = this.storage;
-    if (storage) {
-      storage.setItem(this.CURRENT_USER_KEY, JSON.stringify(found));
-    }
-
-    return true;
+        this.currentUser = found;
+        return true;
+      })
+    );
   }
 
   logout(): void {
     this.currentUser = null;
-    const storage = this.storage;
-    if (storage) {
-      storage.removeItem(this.CURRENT_USER_KEY);
-    }
   }
 
   getCurrentUser(): User | null {

@@ -14,17 +14,15 @@ import { ProductService } from '../../../services/product';
   styleUrls: ['./admin-dashboard.css']
 })
 export class AdminDashboard implements OnInit {
-
   products: Product[] = [];
   lowStockProducts: Product[] = [];
-
-  // Metrics – you can hook these to real data later
-  totalOrders = 4;
-  totalRevenue = 424.99;
-  avgOrderValue = 106.25;
   activeProductsCount = 0;
 
-  // Add product form model
+  // demo stats
+  totalOrders = 128;
+  totalRevenue = 54230;
+  avgOrderValue = 425;
+
   newProduct = {
     name: '',
     description: '',
@@ -42,14 +40,25 @@ export class AdminDashboard implements OnInit {
   }
 
   refreshData(): void {
-    this.products = this.productService.getProducts();
-    this.activeProductsCount = this.products.filter(p => p.isActive !== false).length;
+    this.productService.getProducts().subscribe({
+      next: products => {
+        this.products = products;
 
-    this.lowStockProducts = this.products.filter(p =>
-      typeof p.stockLevel === 'number' &&
-      typeof p.reorderThreshold === 'number' &&
-      p.stockLevel <= p.reorderThreshold
-    );
+        this.activeProductsCount = this.products.filter(
+          p => p.isActive !== false
+        ).length;
+
+        this.lowStockProducts = this.products.filter(
+          p =>
+            typeof p.stockLevel === 'number' &&
+            typeof p.reorderThreshold === 'number' &&
+            p.stockLevel <= p.reorderThreshold
+        );
+      },
+      error: err => {
+        console.error('Failed to load products in admin dashboard', err);
+      }
+    });
   }
 
   onAddProduct(): void {
@@ -57,20 +66,28 @@ export class AdminDashboard implements OnInit {
       return;
     }
 
-    this.productService.addProduct({
-      name: this.newProduct.name,
-      description: this.newProduct.description,
-      category: this.newProduct.category,
-      basePrice: Number(this.newProduct.basePrice),
-      previewImage: this.newProduct.previewImage || 'assets/images/placeholder.jpg',
-      customOptions: [], // default options will be added by service
-      stockLevel: Number(this.newProduct.stockLevel),
-      reorderThreshold: Number(this.newProduct.reorderThreshold),
-      isActive: true
-    });
-
-    this.resetForm();
-    this.refreshData();
+    this.productService
+      .addProduct({
+        name: this.newProduct.name,
+        description: this.newProduct.description,
+        category: this.newProduct.category,
+        basePrice: Number(this.newProduct.basePrice),
+        previewImage:
+          this.newProduct.previewImage || 'assets/images/placeholder.jpg',
+        customOptions: [],
+        stockLevel: Number(this.newProduct.stockLevel),
+        reorderThreshold: Number(this.newProduct.reorderThreshold),
+        isActive: true
+      })
+      .subscribe({
+        next: () => {
+          this.resetForm();
+          this.refreshData();
+        },
+        error: err => {
+          console.error('Failed to add product', err);
+        }
+      });
   }
 
   resetForm(): void {
