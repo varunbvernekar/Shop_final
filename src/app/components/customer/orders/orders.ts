@@ -1,115 +1,81 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-type OrderStatus = 'Confirmed' | 'Packed' | 'Shipped' | 'Delivered';
-
-interface Order {
-  id: string;
-  placedOn: string;
-  amount: number;
-  status: OrderStatus;
-  product: {
-    name: string;
-    image: string;
-    color: string;
-    size: string;
-    material: string;
-  };
-  estimatedDelivery: string;
-  carrier: string;
-  trackingId: string;
-  currentLocation: string;
-}
+import { Component, OnInit } from '@angular/core';
+import { CommonModule, NgIf, NgLocalization } from '@angular/common';
+import { Order, OrderStatus } from '../../../models/order';
+import { OrderService } from '../../../services/order';
+import { AuthService } from '../../../services/auth';
+import { User } from '../../../models/user';
+import { FormsModule, NgModel } from '@angular/forms';
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './orders.html',
   styleUrl: './orders.css'
 })
-export class OrdersPage {
-  // steps used in the timeline
+export class OrdersPage implements OnInit {
   orderSteps: OrderStatus[] = ['Confirmed', 'Packed', 'Shipped', 'Delivered'];
 
-  orders: Order[] = [
-    {
-      id: 'ORD001',
-      placedOn: '20/11/2025',
-      amount: 129.99,
-      status: 'Shipped',
-      product: {
-        name: 'Handcrafted Silver Ring',
-        image: 'assets/images/orders/ring-image.jpg',
-        color: 'Rose Gold',
-        size: '7',
-        material: '14K Gold'
-      },
-      estimatedDelivery: 'Friday, November 28, 2025',
-      carrier: 'Delhivery',
-      trackingId: 'SHIP001',
-      currentLocation: 'Mumbai Distribution Center'
-    },
-    {
-      id: 'ORD002',
-      placedOn: '22/11/2025',
-      amount: 55,
-      status: 'Packed',
-      product: {
-        name: 'Artisan Ceramic Vase',
-        image: 'assets/images/orders/macrane-image.jpg',
-        color: 'Blue',
-        size: 'Medium',
-        material: 'Porcelain'
-      },
-      estimatedDelivery: 'Sunday, November 30, 2025',
-      carrier: 'Shiprocket',
-      trackingId: 'SHIP002',
-      currentLocation: 'Warehouse - Bangalore'
-    },
-    {
-      id: 'ORD003',
-      placedOn: '15/11/2025',
-      amount: 75,
-      status: 'Delivered',
-      product: {
-        name: 'Custom Leather Wallet',
-        image: 'https://via.placeholder.com/80x80?text=Wallet',
-        color: 'Brown',
-        size: 'Bifold',
-        material: 'Genuine Leather'
-      },
-      estimatedDelivery: 'Tuesday, November 25, 2025',
-      carrier: 'Delhivery',
-      trackingId: 'SHIP003',
-      currentLocation: 'Customer Location'
-    },
-    {
-      id: 'ORD004',
-      placedOn: '24/11/2025',
-      amount: 165,
-      status: 'Confirmed',
-      product: {
-        name: 'Pearl Necklace Set',
-        image: 'https://via.placeholder.com/80x80?text=Pearl',
-        color: 'White',
-        size: '18 inch',
-        material: 'Freshwater Pearl'
-      },
-      estimatedDelivery: 'Tuesday, December 2, 2025',
-      carrier: 'Bluedart',
-      trackingId: 'SHIP004',
-      currentLocation: 'Warehouse - Mumbai'
-    }
-  ];
+  orders: Order[] = [];
+  selectedOrder: Order | null = null;
 
-  selectedOrder: Order | null = this.orders[0];
+  isAdmin = false;
+  currentUser: User | null = null;
+  isLoading = false;
+  errorMessage = '';
+
+  constructor(
+    private orderService: OrderService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    this.currentUser = this.authService.getCurrentUser();
+    if (!this.currentUser || !this.currentUser.id) {
+      this.errorMessage = 'You must be logged in to view orders.';
+      return;
+    }
+
+    this.isAdmin = this.currentUser.role === 'ADMIN';
+
+    this.loadOrders();
+  }
+
+  private loadOrders(): void {
+    if (!this.currentUser || !this.currentUser.id) return;
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    const request$ = this.isAdmin
+      ? this.orderService.getAllOrders()
+      : this.orderService.getOrdersForUser(this.currentUser.id);
+
+    request$.subscribe({
+      next: orders => {
+        this.orders = orders;
+        this.selectedOrder = !this.isAdmin && orders.length > 0 ? orders[0] : null;
+        this.isLoading = false;
+      },
+      error: err => {
+        console.error('Failed to load orders', err);
+        this.errorMessage = 'Failed to load orders. Please try again.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // CUSTOMER VIEW HELPERS
 
   selectOrder(order: Order): void {
+    if (this.isAdmin) return; // admin has separate UI
     this.selectedOrder = order;
   }
 
-  // helpers for template – accept string coming from *ngFor
+  getTotalItems(order: Order): number {
+    return order.items.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
   isStepCompleted(order: Order, step: string): boolean {
     const orderStates = this.orderSteps;
     return (
@@ -120,5 +86,33 @@ export class OrdersPage {
 
   isCurrentStatus(order: Order, step: string): boolean {
     return order.status === (step as OrderStatus);
+  }
+
+  // ADMIN VIEW ACTIONS
+
+  onAdminStatusChange(order: Order, newStatus: OrderStatus): void {
+    order.status = newStatus;
+    this.saveAdminChanges(order);
+  }
+
+  onAdminLogisticsChange(order: Order): void {
+    // called when "Save" button is clicked
+    this.saveAdminChanges(order);
+  }
+
+  private saveAdminChanges(order: Order): void {
+    this.orderService.updateOrder(order).subscribe({
+      next: updated => {
+        // update local list
+        const index = this.orders.findIndex(o => o.id === updated.id);
+        if (index > -1) {
+          this.orders[index] = updated;
+        }
+      },
+      error: err => {
+        console.error('Failed to update order', err);
+        alert('Failed to update order. Please try again.');
+      }
+    });
   }
 }

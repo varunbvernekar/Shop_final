@@ -1,78 +1,92 @@
 <div class="orders-page">
   <header class="orders-header">
     <h1>Order Tracking</h1>
-    <p>Track your orders and view delivery status</p>
+    <p *ngIf="!isAdmin">Track your orders and view delivery status</p>
+    <p *ngIf="isAdmin">Manage all customer orders and update tracking details</p>
   </header>
 
-  <div class="orders-layout">
-    <!-- Left: order list -->
-    <aside class="orders-list">
-      <h2 class="panel-title">Your Orders</h2>
+  <!-- Loading / error -->
+  <div *ngIf="isLoading" class="orders-loading">
+    Loading orders...
+  </div>
+  <div *ngIf="!isLoading && errorMessage" class="orders-error">
+    {{ errorMessage }}
+  </div>
 
-      <div
-        *ngFor="let order of orders"
-        class="order-list-item"
-        [class.active]="order === selectedOrder"
-        (click)="selectOrder(order)"
-      >
-        <div class="order-list-main">
-          <div class="order-id">{{ order.id }}</div>
-          <div class="order-status-chip" [ngClass]="order.status">
-            {{ order.status }}
+  <!-- CUSTOMER VIEW -->
+  <ng-container *ngIf="!isAdmin && !isLoading && !errorMessage; else adminView">
+    <div class="orders-layout" *ngIf="orders.length > 0; else noOrdersCustomer">
+      <!-- Left: order list -->
+      <aside class="orders-list">
+        <h2 class="panel-title">Your Orders</h2>
+
+        <div
+          *ngFor="let order of orders"
+          class="order-list-item"
+          [class.active]="order === selectedOrder"
+          (click)="selectOrder(order)"
+        >
+          <div class="order-list-main">
+            <div class="order-id">#{{ order.id }}</div>
+            <div class="order-status-chip" [ngClass]="order.status">
+              {{ order.status }}
+            </div>
+          </div>
+
+          <div class="order-list-meta">
+            <span>{{ order.placedOn }}</span>
+            <span>₹{{ order.amount }}</span>
+            <span>{{ getTotalItems(order) }} items</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right: details -->
+      <section class="orders-detail" *ngIf="selectedOrder; else emptyState">
+        <!-- product info -->
+        <div class="order-card">
+          <h2>Order Details</h2>
+
+          <div *ngFor="let item of selectedOrder.items" class="order-product-row">
+            <img [src]="item.image" alt="Product image" class="order-product-image" />
+            <div class="order-product-info">
+              <h3>{{ item.name }}</h3>
+              <p class="order-product-meta">
+                Color: {{ item.color }} · Size: {{ item.size }} ·
+                Material: {{ item.material }}
+              </p>
+              <p class="order-product-meta">
+                Qty: {{ item.quantity }} · Price: ₹{{ item.price }}
+              </p>
+            </div>
+          </div>
+
+          <div class="order-summary-row">
+            <span>Order ID</span>
+            <span>#{{ selectedOrder.id }}</span>
+          </div>
+          <div class="order-summary-row">
+            <span>Placed On</span>
+            <span>{{ selectedOrder.placedOn }}</span>
+          </div>
+          <div class="order-summary-row">
+            <span>Total Amount</span>
+            <span>₹{{ selectedOrder.amount }}</span>
           </div>
         </div>
 
-        <div class="order-list-meta">
-          <span>{{ order.placedOn }}</span>
-          <span class="amount">${{ order.amount }}</span>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Right: details -->
-    <section class="orders-detail" *ngIf="selectedOrder; else emptyState">
-      <div class="order-card">
-        <div class="order-card-header">
-          <div>
-            <h2>Order {{ selectedOrder.id }}</h2>
-            <p>Placed on {{ selectedOrder.placedOn }}</p>
-          </div>
-
-          <div class="order-status-chip large" [ngClass]="selectedOrder.status">
-            {{ selectedOrder.status }}
-          </div>
-        </div>
-
-        <!-- product row -->
-        <div class="order-product">
-          <img
-            [src]="selectedOrder.product.image"
-            [alt]="selectedOrder.product.name"
-          />
-          <div class="order-product-info">
-            <h3>{{ selectedOrder.product.name }}</h3>
-            <p>Color: {{ selectedOrder.product.color }}</p>
-            <p>Size: {{ selectedOrder.product.size }}</p>
-            <p>Material: {{ selectedOrder.product.material }}</p>
-          </div>
-          <div class="order-product-amount">
-            ${{ selectedOrder.amount }}
-          </div>
-        </div>
-
-        <!-- timeline -->
-        <div class="order-timeline">
-          <h3>Order Timeline</h3>
-
-          <div class="timeline-steps">
+        <!-- status timeline -->
+        <div class="order-card">
+          <h3>Order Status</h3>
+          <div class="status-timeline">
             <div
-              class="timeline-step"
               *ngFor="let step of orderSteps"
+              class="status-step"
               [class.completed]="isStepCompleted(selectedOrder, step)"
               [class.current]="isCurrentStatus(selectedOrder, step)"
             >
-              <div class="timeline-icon"></div>
-              <div class="timeline-label">
+              <div class="status-dot"></div>
+              <div class="status-label">
                 <div>{{ step }}</div>
                 <small *ngIf="isCurrentStatus(selectedOrder, step)">
                   Current Status
@@ -83,50 +97,137 @@
         </div>
 
         <!-- estimated delivery -->
-        <div class="order-estimate">
-          <div class="estimate-title">Estimated Delivery</div>
-          <div class="estimate-date">
-            {{ selectedOrder.estimatedDelivery }}
-          </div>
-        </div>
-      </div>
-
-      <!-- shipment tracking -->
-      <div class="shipment-card">
-        <h3>Shipment Tracking</h3>
-
-        <div class="shipment-row">
-          <div>
-            <p class="label">Carrier</p>
-            <p>{{ selectedOrder.carrier }}</p>
-          </div>
-          <a href="javascript:void(0)" class="track-link">Track Package</a>
-        </div>
-
-        <div class="shipment-row">
-          <div>
-            <p class="label">Current Location</p>
-            <p>{{ selectedOrder.currentLocation }}</p>
+        <div class="order-card">
+          <div class="order-estimate">
+            <div class="estimate-title">Estimated Delivery</div>
+            <div class="estimate-date">
+              {{ selectedOrder.estimatedDelivery }}
+            </div>
           </div>
         </div>
 
-        <div class="shipment-row">
-          <div>
-            <p class="label">Tracking ID</p>
-            <p>{{ selectedOrder.trackingId }}</p>
+        <!-- shipment tracking -->
+        <div class="order-card shipment-card">
+          <h3>Shipment Tracking</h3>
+
+          <div class="shipment-row">
+            <div>
+              <p class="label">Carrier</p>
+              <p>{{ selectedOrder.logistics.carrier }}</p>
+            </div>
+            <a href="javascript:void(0)" class="track-link">Track Package</a>
+          </div>
+
+          <div class="shipment-row">
+            <div>
+              <p class="label">Tracking ID</p>
+              <p>{{ selectedOrder.logistics.trackingId }}</p>
+            </div>
+          </div>
+
+          <div class="shipment-row">
+            <div>
+              <p class="label">Current Location</p>
+              <p>{{ selectedOrder.logistics.currentLocation }}</p>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Placeholder when nothing selected -->
-    <ng-template #emptyState>
+      <!-- Placeholder when nothing selected -->
+      <ng-template #emptyState>
+        <section class="orders-detail empty">
+          <div class="empty-box">
+            <div class="empty-icon">📦</div>
+            <p>Select an order to view details</p>
+          </div>
+        </section>
+      </ng-template>
+    </div>
+
+    <ng-template #noOrdersCustomer>
       <section class="orders-detail empty">
         <div class="empty-box">
-          <div class="empty-icon">📦</div>
-          <p>Select an order to view details</p>
+          <div class="empty-icon">🛒</div>
+          <p>You have not placed any orders yet.</p>
         </div>
       </section>
     </ng-template>
-  </div>
+  </ng-container>
+
+  <!-- ADMIN VIEW -->
+  <ng-template #adminView>
+    <div class="admin-orders" *ngIf="!isLoading && !errorMessage">
+      <h2 class="panel-title">All Customer Orders</h2>
+
+      <div *ngIf="orders.length === 0" class="empty-box">
+        <div class="empty-icon">📦</div>
+        <p>No orders placed yet.</p>
+      </div>
+
+      <table *ngIf="orders.length > 0" class="admin-orders-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>User ID</th>
+            <th>Placed On</th>
+            <th>Total (₹)</th>
+            <th>Status</th>
+            <th>Carrier</th>
+            <th>Tracking ID</th>
+            <th>Current Location</th>
+            <th>Save</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders">
+            <td>#{{ order.id }}</td>
+            <td>{{ order.userId }}</td>
+            <td>{{ order.placedOn }}</td>
+            <td>{{ order.amount }}</td>
+            <td>
+              <select
+                [(ngModel)]="order.status"
+                (change)="onAdminStatusChange(order, order.status)"
+              >
+                <option *ngFor="let step of orderSteps" [value]="step">
+                  {{ step }}
+                </option>
+              </select>
+            </td>
+            <td>
+              <input
+                type="text"
+                [(ngModel)]="order.logistics.carrier"
+                placeholder="e.g. Shiprocket"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                [(ngModel)]="order.logistics.trackingId"
+                placeholder="Tracking ID"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                [(ngModel)]="order.logistics.currentLocation"
+                placeholder="Current location"
+              />
+            </td>
+            <td>
+              <button
+                type="button"
+                class="admin-save-btn"
+                (click)="onAdminLogisticsChange(order)"
+              >
+                Save
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-template>
 </div>

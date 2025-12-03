@@ -27,3 +27,63 @@
   font-size: 13px;
   color: #64748b; /* slate-500 */
 }
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-row-inline {
+  display: flex;
+  gap: 12px;
+}
+
+.inline-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+label {
+  font-size: 13px;
+  color: #374151;
+}
+
+input,
+textarea {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.2);
+}
+
+.primary-btn {
+  margin-top: 6px;
+  background: #4f46e5;
+  border-radius: 999px;
+  border: none;
+  color: #ffffff;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.primary-btn:hover {
+  opacity: 0.9;
+}

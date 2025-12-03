@@ -8,12 +8,12 @@
     <p>Discover our unique handmade products and add them to your cart.</p>
 
     <button
-      type="button"
-      (click)="continueShopping.emit()"
-      class="btn-primary"
-    >
-      ← Start Shopping
-    </button>
+  type="button"
+  (click)="onContinueShopping()"
+  class="btn-primary"
+>
+  ← Start Shopping
+</button>
   </div>
 </div>
 
@@ -27,12 +27,12 @@
       </h2>
 
       <button
-        type="button"
-        (click)="continueShopping.emit()"
-        class="cart-continue"
-      >
-        ← Continue Shopping
-      </button>
+  type="button"
+  (click)="onContinueShopping()"
+  class="cart-continue"
+>
+  ← Continue Shopping
+</button>
     </div>
 
     <div class="cart-grid">
@@ -57,14 +57,13 @@
                 </span>
               </div>
 
-              <button
-                type="button"
-                (click)="removeItem.emit(item.id)"
-                class="cart-remove"
-                aria-label="Remove item"
-              >
-                🗑️
-              </button>
+            <button
+              type="button"
+              (click)="onRemoveItem(item.id)"
+              class="cart-remove"
+              aria-label="Remove item">
+              🗑️
+            </button>
             </div>
 
             <div class="cart-item-details">
@@ -128,12 +127,12 @@
         </div>
 
         <button
-          type="button"
-          (click)="handleCheckout()"
-          class="btn-primary full"
-        >
-          💳 Proceed to Checkout
-        </button>
+  type="button"
+  (click)="handleCheckout()"
+  class="btn-primary full"
+>
+  💳 Proceed to Checkout
+</button>
 
         <div class="cart-delivery">
           <p class="title">Estimated Delivery</p>

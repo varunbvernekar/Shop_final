@@ -1,0 +1,38 @@
+// src/app/services/order.ts
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Order } from '../models/order';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class OrderService {
+  private readonly apiUrl = 'http://localhost:3000';
+
+  constructor(private http: HttpClient) {}
+
+  /** Get all orders (for admin) */
+  getAllOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.apiUrl}/orders`);
+  }
+
+  /** Get orders only for a specific user (for customer) */
+  getOrdersForUser(userId: number): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.apiUrl}/orders?userId=${userId}`);
+  }
+
+  /** Create a new order */
+  createOrder(order: Omit<Order, 'id'>): Observable<Order> {
+    return this.http.post<Order>(`${this.apiUrl}/orders`, order);
+  }
+
+  /** Update an existing order (status / logistics) */
+  updateOrder(order: Order): Observable<Order> {
+    if (!order.id) {
+      throw new Error('Order id is required to update an order');
+    }
+    return this.http.put<Order>(`${this.apiUrl}/orders/${order.id}`, order);
+  }
+}

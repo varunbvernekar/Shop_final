@@ -1,23 +1,28 @@
+// src/app/components/customer/product-page/product-page.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Product } from '../../../models/product';
-import { UserRole } from '../../../models/user';
+import { UserRole, User } from '../../../models/user';
 import { ProductService } from '../../../services/product';
 import { AuthService } from '../../../services/auth';
 import { CartItem } from '../../../models/cart-item';
+import { CartService } from '../../../services/cart';
 import { ProductCatalog } from './product-catalog/product-catalog';
 import { ProductCustomizer } from './product-customizer/product-customizer';
 import { Cart } from './cart/cart';
-import { ActivatedRoute } from '@angular/router';
-import { CartService } from '../../../services/cart';
+import { Order, OrderStatus } from '../../../models/order';
+import { OrderService } from '../../../services/order';
 
 type CustomerView = 'catalog' | 'customizer' | 'cart';
 
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule, ProductCatalog, ProductCustomizer, Cart],
+  imports: [CommonModule, FormsModule, ProductCatalog, ProductCustomizer, Cart],
   templateUrl: './product-page.html',
   styleUrls: ['./product-page.css']
 })
@@ -28,15 +33,43 @@ export class ProductPage implements OnInit {
   view: CustomerView = 'catalog';
   selectedProduct: Product | null = null;
 
+  // Admin add-product form model
+  newProduct = {
+    name: '',
+    description: '',
+    category: '',
+    basePrice: 0,
+    previewImage: '',
+    stockLevel: 0,
+    reorderThreshold: 0
+  };
+
   constructor(
     private productService: ProductService,
     private authService: AuthService,
     private cartService: CartService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private orderService: OrderService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Load products via HTTP from db.json
+    this.loadProducts();
+
+    const user = this.authService.getCurrentUser();
+    this.role = user?.role ?? null;
+
+    this.route.queryParamMap.subscribe(params => {
+      const view = params.get('view') as CustomerView | null;
+      if (view === 'cart' || view === 'catalog' || view === 'customizer') {
+        this.view = view;
+      } else {
+        this.view = 'catalog';
+      }
+    });
+  }
+
+  private loadProducts(): void {
     this.productService.getProducts().subscribe({
       next: products => {
         this.products = products;
@@ -45,29 +78,64 @@ export class ProductPage implements OnInit {
         console.error('Failed to load products', err);
       }
     });
-
-    const user = this.authService.getCurrentUser();
-    this.role = user?.role ?? null;
-
-    // Handle ?view=cart|catalog|customizer for navbar/cart link
-    this.route.queryParamMap.subscribe(params => {
-      const viewParam = params.get('view') as CustomerView | null;
-      if (viewParam === 'cart' || viewParam === 'catalog' || viewParam === 'customizer') {
-        this.view = viewParam;
-      } else {
-        this.view = 'catalog';
-      }
-    });
   }
 
-  // expose cart items from CartService to template
+  get isAdmin(): boolean {
+    return this.role === 'ADMIN';
+  }
+
+  // ---- ADMIN flow: add product ----
+
+  onAddProduct(): void {
+    if (!this.isAdmin) {
+      return;
+    }
+
+    if (!this.newProduct.name || !this.newProduct.basePrice) {
+      return;
+    }
+
+    this.productService
+      .addProduct({
+        name: this.newProduct.name,
+        description: this.newProduct.description,
+        category: this.newProduct.category,
+        basePrice: this.newProduct.basePrice,
+        previewImage: this.newProduct.previewImage,
+        stockLevel: this.newProduct.stockLevel,
+        reorderThreshold: this.newProduct.reorderThreshold,
+        // ✅ required by Product model
+        customOptions: []
+      })
+      .subscribe({
+        next: () => {
+          this.resetNewProductForm();
+          this.loadProducts();
+        },
+        error: err => {
+          console.error('Failed to add product', err);
+        }
+      });
+  }
+
+  private resetNewProductForm(): void {
+    this.newProduct = {
+      name: '',
+      description: '',
+      category: '',
+      basePrice: 0,
+      previewImage: '',
+      stockLevel: 0,
+      reorderThreshold: 0
+    };
+  }
+
+  // ---- CUSTOMER flow ----
+
   get cartItems(): CartItem[] {
     return this.cartService.getItems();
   }
 
-  // ----- CUSTOMER flow -----
-
-  // 👇 This is what the template expects: (productSelect)="handleSelectProduct($event)"
   handleSelectProduct(product: Product): void {
     if (this.role !== 'CUSTOMER') {
       return;
@@ -104,7 +172,6 @@ export class ProductPage implements OnInit {
     this.view = 'cart';
   }
 
-  // Cart component emits { itemId, quantity }
   handleUpdateQuantity(event: { itemId: string; quantity: number }): void {
     this.cartService.updateQuantity(event.itemId, event.quantity);
   }
@@ -118,10 +185,69 @@ export class ProductPage implements OnInit {
   }
 
   handleCheckout(): void {
-    alert('Checkout flow not implemented yet.');
+    const user = this.authService.getCurrentUser();
+
+    if (!user || user.role !== 'CUSTOMER' || !user.id) {
+      alert('Please log in as a customer before placing an order.');
+      return;
+    }
+
+    const items = this.cartService.getItems();
+    if (!items.length) {
+      alert('Your cart is empty.');
+      return;
+    }
+
+    const amount = items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    const today = new Date();
+    const placedOn = today.toLocaleDateString('en-IN');
+    const estimated = new Date();
+    estimated.setDate(today.getDate() + 7);
+    const estimatedDelivery = estimated.toLocaleDateString('en-IN');
+
+    const orderItems = items.map(i => ({
+      productId: i.product.productId,
+      name: i.product.name,
+      image: i.product.previewImage,
+      quantity: i.quantity,
+      color: i.customization.color,
+      size: i.customization.size,
+      material: i.customization.material,
+      price: i.price
+    }));
+
+    const payload: Omit<Order, 'id'> = {
+      userId: user.id,
+      placedOn,
+      amount,
+      status: 'Confirmed' as OrderStatus,
+      items: orderItems,
+      estimatedDelivery,
+      logistics: {
+        carrier: 'Not assigned',
+        trackingId: '-',
+        currentLocation: 'Order confirmed'
+      }
+    };
+
+    this.orderService.createOrder(payload).subscribe({
+      next: () => {
+        alert('Order placed successfully!');
+        this.cartService.clear();
+        this.view = 'catalog';
+        this.router.navigate(['/orders']);
+      },
+      error: err => {
+        console.error('Failed to place order', err);
+        alert('Failed to place order. Please try again.');
+      }
+    });
   }
 
-  // Admin/Vendor placeholder actions (if you use staffView template)
   viewProductInsights(product: Product): void {
     alert(`Admin: Viewing insights for "${product.name}".`);
   }

@@ -163,8 +163,7 @@
   margin-bottom: 12px;
 }
 
-.inventory-card,
-.add-product-card {
+.inventory-card {
   background: #ffffff;
   border-radius: 16px;
   padding: 16px 18px 18px;

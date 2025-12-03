@@ -17,6 +17,18 @@ export class Cart {
   }>();
   @Output() removeItem = new EventEmitter<string>();
   @Output() continueShopping = new EventEmitter<void>();
+  @Output() checkout = new EventEmitter<void>();
+
+  get hasItems(): boolean {
+    return this.items && this.items.length > 0;
+  }
+  onContinueShopping(): void {
+    this.continueShopping.emit();
+  }
+
+  onRemoveItem(id: string): void {
+    this.removeItem.emit(id);
+  }
 
   get subtotal(): number {
     return this.items.reduce(
@@ -37,9 +49,7 @@ export class Cart {
     return this.subtotal + this.tax + this.shipping;
   }
 
-  handleCheckout(): void {
-    alert('Checkout functionality will be integrated with Razorpay/Stripe.');
-  }
+  
 
   decrease(item: CartItem): void {
     if (item.quantity > 1) {
@@ -55,5 +65,15 @@ export class Cart {
       itemId: item.id,
       quantity: item.quantity + 1
     });
+  }
+
+  /** Called from the "Proceed to Checkout" button */
+  handleCheckout(): void {
+    if (!this.hasItems) {
+      alert('Your cart is empty. Add some products before checking out.');
+      return;
+    }
+    // Just emit event – parent will actually create the order in db.json
+    this.checkout.emit();
   }
 }

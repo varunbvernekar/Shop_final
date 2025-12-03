@@ -1,14 +1,14 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Admin User",
       "email": "admin@example.com",
       "password": "admin123",
       "role": "ADMIN"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Test Customer",
       "email": "customer@example.com",
       "password": "customer123",
@@ -87,6 +87,109 @@
       "stockLevel": 18,
       "reorderThreshold": 6,
       "isActive": true
+    },
+    {
+      "id": "P007",
+      "name": "demon",
+      "description": "Demon Slayer",
+      "category": "Home decor",
+      "basePrice": 100,
+      "previewImage": "https://images6.alphacoders.com/136/1368082.png",
+      "customOptions": [
+        {
+          "type": "colour",
+          "values": [
+            "Silver",
+            "Gold",
+            "Rose Gold"
+          ],
+          "priceAdjustment": {
+            "Silver": 0,
+            "Gold": 15,
+            "Rose Gold": 10
+          }
+        },
+        {
+          "type": "size",
+          "values": [
+            "Small",
+            "Medium",
+            "Large"
+          ],
+          "priceAdjustment": {
+            "Small": -5,
+            "Medium": 0,
+            "Large": 10
+          }
+        },
+        {
+          "type": "material",
+          "values": [
+            "Standard",
+            "Premium"
+          ],
+          "priceAdjustment": {
+            "Standard": 0,
+            "Premium": 25
+          }
+        }
+      ],
+      "stockLevel": 10,
+      "reorderThreshold": 12,
+      "isActive": true,
+      "productId": "P007"
+    }
+  ],
+  "orders": [
+    {
+      "id": "97a3",
+      "userId": "2",
+      "placedOn": "3/12/2025",
+      "amount": 115,
+      "status": "Shipped",
+      "items": [
+        {
+          "productId": "P001",
+          "name": "Handcrafted Silver Ring",
+          "image": "assets/images/ring.jpg",
+          "quantity": 1,
+          "color": "Silver",
+          "size": "Small",
+          "material": "Standard",
+          "price": 115
+        }
+      ],
+      "estimatedDelivery": "10/12/2025",
+      "logistics": {
+        "carrier": "Delhivery",
+        "trackingId": "1244",
+        "currentLocation": "Banglore"
+      }
+    },
+    {
+      "id": "4209",
+      "userId": "2",
+      "placedOn": "3/12/2025",
+      "amount": 115,
+      "status": "Shipped",
+      "items": [
+        {
+          "productId": "P001",
+          "name": "Handcrafted Silver Ring",
+          "image": "assets/images/ring.jpg",
+          "quantity": 1,
+          "color": "Silver",
+          "size": "Small",
+          "material": "Standard",
+          "price": 115
+        }
+      ],
+      "estimatedDelivery": "10/12/2025",
+      "logistics": {
+        "carrier": "VRL",
+        "trackingId": "13123",
+        "currentLocation": "mumbai"
+      }
     }
   ]
 }

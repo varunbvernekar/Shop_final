@@ -10,7 +10,7 @@ import { AuthService } from '../../../services/auth';
   standalone: true,
   imports: [FormsModule, NgIf, RouterLink],
   templateUrl: './login.html',
-  styleUrls: ['./login.css']
+  styleUrls: ['./login.css'],
 })
 export class Login implements OnInit {
   email = '';
@@ -26,7 +26,7 @@ export class Login implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe(params => {
+    this.route.queryParamMap.subscribe((params) => {
       const registered = params.get('registered');
       if (registered === 'true') {
         this.successMessage = 'Registration successful. Please log in.';
@@ -43,16 +43,24 @@ export class Login implements OnInit {
     }
 
     this.authService.login(this.email, this.password).subscribe({
-      next: success => {
+      next: (success) => {
         if (success) {
-          this.router.navigate(['/products']);
+          const user = this.authService.getCurrentUser();
+
+          if (user?.role === 'ADMIN') {
+            // Admin → go to dashboard
+            this.router.navigate(['/admin']);
+          } else {
+            // Customer (and others like VENDOR) → go to products
+            this.router.navigate(['/products']);
+          }
         } else {
           this.errorMessage = 'Invalid email or password. Please try again.';
         }
       },
       error: () => {
         this.errorMessage = 'Something went wrong during login. Please try again.';
-      }
+      },
     });
   }
 }
