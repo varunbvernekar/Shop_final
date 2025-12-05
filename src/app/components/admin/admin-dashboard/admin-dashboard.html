@@ -23,7 +23,7 @@
     <div class="stat-card">
       <div class="stat-icon stat-icon-avg">📈</div>
       <div class="stat-label">Avg Order Value</div>
-      <div class="stat-value">${{ avgOrderValue }}</div>
+      <div class="stat-value">${{ avgOrderValue | number:'1.0-0' }}</div>
     </div>
 
     <div class="stat-card">
@@ -33,46 +33,48 @@
     </div>
   </div>
 
-  <!-- Low stock alerts -->
-  <div class="low-stock-card" *ngIf="lowStockProducts.length">
-    <div class="low-stock-header">
-      <div class="low-stock-title">
-        <span class="warning-icon">⚠️</span>
-        Low Stock Alerts
-      </div>
-      <div class="low-stock-subtitle">
-        {{ lowStockProducts.length }} product(s) need immediate attention
-      </div>
-    </div>
+  <!-- Action buttons -->
+  <div class="action-buttons">
+    <button class="action-btn" (click)="toggleReports()">
+      {{ showReports ? 'Hide' : 'Show' }} Reports
+    </button>
+  </div>
 
-    <div class="low-stock-list">
-      <div class="low-stock-item" *ngFor="let p of lowStockProducts">
-        <div class="low-stock-info">
-          <div class="low-stock-name">{{ p.name }}</div>
-          <div class="low-stock-meta">
-            Stock:
-            <span class="stock-value">{{ p.stockLevel }} units</span>
-            &nbsp; (Threshold:
-            <span class="threshold-value">{{ p.reorderThreshold }}</span>)
-          </div>
-        </div>
-        <button class="reorder-btn">Reorder Now</button>
+  <!-- Reports Section -->
+  <div class="reports-card" *ngIf="showReports">
+    <h2 class="section-title">Reports & Analytics</h2>
+    <div class="reports-filters">
+      <div class="form-row">
+        <label>Start Date</label>
+        <input type="date" [(ngModel)]="reportStartDate" />
+      </div>
+      <div class="form-row">
+        <label>End Date</label>
+        <input type="date" [(ngModel)]="reportEndDate" />
+      </div>
+      <button class="primary-btn" (click)="filterReports()">Filter Reports</button>
+    </div>
+    <div class="report-stats" *ngIf="filteredOrders.length > 0">
+      <div class="report-stat">
+        <span class="report-label">Orders in Period:</span>
+        <span class="report-value">{{ getReportOrderCount() }}</span>
+      </div>
+      <div class="report-stat">
+        <span class="report-label">Revenue in Period:</span>
+        <span class="report-value">${{ getReportRevenue() | number:'1.0-0' }}</span>
       </div>
     </div>
   </div>
 
   <div class="dashboard-main-grid">
-    <!-- Inventory table -->
+    <!-- Products customization section -->
     <div class="inventory-card">
-      <h2 class="section-title">Inventory Status</h2>
-
+      <h2 class="section-title">Product Customization</h2>
       <div class="table-wrapper">
         <table class="inventory-table">
           <thead>
             <tr>
               <th>Product</th>
-              <th>Stock Level</th>
-              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -85,24 +87,63 @@
                 </div>
               </td>
               <td>
-                <span class="stock-icon">📦</span>
-                {{ p.stockLevel || 0 }} units
-              </td>
-              <td>
-                <span [class]="getStatusClass(p)">
-                  {{ getStatusLabel(p) }}
-                </span>
-              </td>
-              <td>
-                <button class="manage-link">Manage</button>
+                <div class="action-buttons-inline">
+                  <button class="manage-link" (click)="openCustomizationEditor(p)">Customize</button>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-
-    
-    
   </div>
+
+  <!-- Customization Options Editor Modal -->
+  <div class="modal-overlay" *ngIf="selectedProductForCustomization" (click)="closeCustomizationEditor()">
+    <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+      <h3>Customization Options - {{ selectedProductForCustomization.name }}</h3>
+      
+      <div class="customization-section">
+        <h4>Add New Option Value</h4>
+        <div class="form-row-inline">
+          <div class="inline-item">
+            <label>Option Type</label>
+            <select [(ngModel)]="newOptionType">
+              <option value="colour">Colour</option>
+              <option value="size">Size</option>
+              <option value="material">Material</option>
+            </select>
+          </div>
+          <div class="inline-item">
+            <label>Value</label>
+            <input type="text" [(ngModel)]="newOptionValue" placeholder="e.g. Red" />
+          </div>
+          <div class="inline-item">
+            <label>Price Adjustment</label>
+            <input type="number" [(ngModel)]="newOptionPrice" placeholder="0" />
+          </div>
+          <div class="inline-item">
+            <button class="primary-btn" (click)="addCustomOptionValue()" style="margin-top: 20px;">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="customization-section" *ngFor="let option of editingCustomOptions">
+        <h4>{{ option.type | titlecase }} Options</h4>
+        <div class="option-values-list">
+          <div class="option-value-item" *ngFor="let value of option.values">
+            <span>{{ value }}</span>
+            <span class="price-adjustment">${{ option.priceAdjustment[value] || 0 }}</span>
+            <button class="remove-btn" (click)="removeCustomOptionValue(option.type, value)">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="primary-btn" (click)="saveCustomOptions()">Save Options</button>
+        <button class="secondary-btn" (click)="closeCustomizationEditor()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
 </div>

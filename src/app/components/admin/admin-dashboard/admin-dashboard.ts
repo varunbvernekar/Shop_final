@@ -3,8 +3,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Product } from '../../../models/product';
+import { Product, CustomOptionGroup, CustomOptionType } from '../../../models/product';
 import { ProductService } from '../../../services/product';
+import { OrderService } from '../../../services/order';
+import { Order } from '../../../models/order';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -15,8 +17,8 @@ import { ProductService } from '../../../services/product';
 })
 export class AdminDashboard implements OnInit {
   products: Product[] = [];
-  lowStockProducts: Product[] = [];
   activeProductsCount = 0;
+  orders: Order[] = [];
 
   // demo stats
   totalOrders = 128;
@@ -33,10 +35,28 @@ export class AdminDashboard implements OnInit {
     reorderThreshold: 0
   };
 
-  constructor(private productService: ProductService) {}
+  // Customization options management
+  selectedProductForCustomization: Product | null = null;
+  editingCustomOptions: CustomOptionGroup[] = [];
+  newOptionType: CustomOptionType = 'colour';
+  newOptionValue = '';
+  newOptionPrice = 0;
+
+
+  // Reports
+  showReports = false;
+  reportStartDate = '';
+  reportEndDate = '';
+  filteredOrders: Order[] = [];
+
+  constructor(
+    private productService: ProductService,
+    private orderService: OrderService
+  ) {}
 
   ngOnInit(): void {
     this.refreshData();
+    this.loadOrders();
   }
 
   refreshData(): void {
@@ -47,16 +67,24 @@ export class AdminDashboard implements OnInit {
         this.activeProductsCount = this.products.filter(
           p => p.isActive !== false
         ).length;
-
-        this.lowStockProducts = this.products.filter(
-          p =>
-            typeof p.stockLevel === 'number' &&
-            typeof p.reorderThreshold === 'number' &&
-            p.stockLevel <= p.reorderThreshold
-        );
       },
       error: err => {
         console.error('Failed to load products in admin dashboard', err);
+      }
+    });
+  }
+
+  loadOrders(): void {
+    this.orderService.getAllOrders().subscribe({
+      next: orders => {
+        this.orders = orders;
+        this.filteredOrders = orders;
+        this.totalOrders = orders.length;
+        this.totalRevenue = orders.reduce((sum, o) => sum + o.amount, 0);
+        this.avgOrderValue = orders.length > 0 ? this.totalRevenue / orders.length : 0;
+      },
+      error: err => {
+        console.error('Failed to load orders', err);
       }
     });
   }
@@ -102,25 +130,110 @@ export class AdminDashboard implements OnInit {
     };
   }
 
-  getStatusClass(product: Product): string {
-    if (
-      typeof product.stockLevel === 'number' &&
-      typeof product.reorderThreshold === 'number' &&
-      product.stockLevel <= product.reorderThreshold
-    ) {
-      return 'status-pill critical';
-    }
-    return 'status-pill healthy';
+
+  // Customization Options Management
+  openCustomizationEditor(product: Product): void {
+    this.selectedProductForCustomization = product;
+    this.editingCustomOptions = JSON.parse(JSON.stringify(product.customOptions || []));
   }
 
-  getStatusLabel(product: Product): string {
-    if (
-      typeof product.stockLevel === 'number' &&
-      typeof product.reorderThreshold === 'number' &&
-      product.stockLevel <= product.reorderThreshold
-    ) {
-      return 'Critical';
+  closeCustomizationEditor(): void {
+    this.selectedProductForCustomization = null;
+    this.editingCustomOptions = [];
+    this.newOptionValue = '';
+    this.newOptionPrice = 0;
+  }
+
+  addCustomOptionValue(): void {
+    if (!this.newOptionValue.trim()) return;
+
+    let optionGroup = this.editingCustomOptions.find(o => o.type === this.newOptionType);
+    if (!optionGroup) {
+      optionGroup = {
+        type: this.newOptionType,
+        values: [],
+        priceAdjustment: {}
+      };
+      this.editingCustomOptions.push(optionGroup);
     }
-    return 'Healthy';
+
+    if (!optionGroup.values.includes(this.newOptionValue)) {
+      optionGroup.values.push(this.newOptionValue);
+      optionGroup.priceAdjustment[this.newOptionValue] = this.newOptionPrice || 0;
+    }
+
+    this.newOptionValue = '';
+    this.newOptionPrice = 0;
+  }
+
+  removeCustomOptionValue(optionType: CustomOptionType, value: string): void {
+    const optionGroup = this.editingCustomOptions.find(o => o.type === optionType);
+    if (optionGroup) {
+      optionGroup.values = optionGroup.values.filter(v => v !== value);
+      delete optionGroup.priceAdjustment[value];
+    }
+  }
+
+  saveCustomOptions(): void {
+    if (!this.selectedProductForCustomization) return;
+
+    const updated: Product = {
+      ...this.selectedProductForCustomization,
+      customOptions: this.editingCustomOptions
+    };
+
+    this.productService.updateProduct(updated).subscribe({
+      next: () => {
+        alert('Customization options saved successfully!');
+        this.refreshData();
+        this.closeCustomizationEditor();
+      },
+      error: err => {
+        console.error('Failed to save customization options', err);
+        alert('Failed to save customization options');
+      }
+    });
+  }
+
+
+  // Reports
+  toggleReports(): void {
+    this.showReports = !this.showReports;
+    if (this.showReports) {
+      this.filteredOrders = this.orders;
+    }
+  }
+
+  filterReports(): void {
+    if (!this.reportStartDate || !this.reportEndDate) {
+      alert('Please select both start and end dates');
+      return;
+    }
+
+    const start = new Date(this.reportStartDate);
+    const end = new Date(this.reportEndDate);
+    end.setHours(23, 59, 59, 999);
+
+    this.filteredOrders = this.orders.filter(order => {
+      const orderDate = this.parseDate(order.placedOn);
+      return orderDate >= start && orderDate <= end;
+    });
+  }
+
+  private parseDate(dateStr: string): Date {
+    // Handle format like "3/12/2025"
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+      return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+    }
+    return new Date(dateStr);
+  }
+
+  getReportRevenue(): number {
+    return this.filteredOrders.reduce((sum, o) => sum + o.amount, 0);
+  }
+
+  getReportOrderCount(): number {
+    return this.filteredOrders.length;
   }
 }

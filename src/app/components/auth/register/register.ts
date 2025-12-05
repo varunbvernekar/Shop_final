@@ -16,6 +16,7 @@ import { User, UserRole } from '../../../models/user';
 export class Register {
   name = '';
   email = '';
+  phoneNumber = '';
   password = '';
   confirmPassword = '';
   role: UserRole = 'CUSTOMER';
@@ -30,7 +31,7 @@ export class Register {
   onSubmit(): void {
     this.errorMessage = '';
 
-    if (!this.name || !this.email || !this.password || !this.confirmPassword) {
+    if (!this.name || !this.email || !this.phoneNumber || !this.password || !this.confirmPassword) {
       this.errorMessage = 'All fields are required.';
       return;
     }
@@ -43,8 +44,19 @@ export class Register {
     const user: User = {
       name: this.name,
       email: this.email,
+      phoneNumber: this.phoneNumber || '',
       password: this.password,
-      role: this.role
+      role: this.role,
+      address: {
+        street: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        country: ''
+      },
+      dateOfBirth: '',
+      gender: '',
+      preferredLanguage: ''
     };
 
     this.authService.register(user).subscribe({

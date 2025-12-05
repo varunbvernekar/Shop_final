@@ -26,58 +26,56 @@
           [class.active]="order === selectedOrder"
           (click)="selectOrder(order)"
         >
-          <div class="order-list-main">
-            <div class="order-id">#{{ order.id }}</div>
-            <div class="order-status-chip" [ngClass]="order.status">
-              {{ order.status }}
+          <div class="order-list-content">
+            <div class="order-list-header">
+              <div class="order-id">{{ getOrderId(order) }}</div>
+              <div class="order-status-chip" [ngClass]="order.status">
+                {{ order.status }}
+              </div>
+            </div>
+
+            <div class="order-list-meta">
+              <span class="order-date">{{ order.placedOn }}</span>
+              <span class="order-price">${{ order.amount }}</span>
             </div>
           </div>
-
-          <div class="order-list-meta">
-            <span>{{ order.placedOn }}</span>
-            <span>₹{{ order.amount }}</span>
-            <span>{{ getTotalItems(order) }} items</span>
+          <div class="order-status-icon" [ngClass]="order.status">
+            {{ getStatusIcon(order.status) }}
           </div>
         </div>
       </aside>
 
       <!-- Right: details -->
       <section class="orders-detail" *ngIf="selectedOrder; else emptyState">
-        <!-- product info -->
-        <div class="order-card">
-          <h2>Order Details</h2>
+        <!-- Order Header -->
+        <div class="order-header-card">
+          <div class="order-header-info">
+            <h2 class="order-header-title">Order {{ getOrderId(selectedOrder) }}</h2>
+            <p class="order-header-date">Placed on {{ selectedOrder.placedOn }}</p>
+          </div>
+          <button class="order-status-button" [ngClass]="selectedOrder.status">
+            {{ selectedOrder.status }}
+          </button>
+        </div>
 
-          <div *ngFor="let item of selectedOrder.items" class="order-product-row">
-            <img [src]="item.image" alt="Product image" class="order-product-image" />
-            <div class="order-product-info">
-              <h3>{{ item.name }}</h3>
-              <p class="order-product-meta">
-                Color: {{ item.color }} · Size: {{ item.size }} ·
-                Material: {{ item.material }}
-              </p>
-              <p class="order-product-meta">
-                Qty: {{ item.quantity }} · Price: ₹{{ item.price }}
-              </p>
+        <!-- Product Information -->
+        <div class="order-card product-card" *ngFor="let item of selectedOrder.items">
+          <div class="product-info-container">
+            <img [src]="item.image" alt="Product image" class="product-image" />
+            <div class="product-details">
+              <h3 class="product-name">{{ item.name }}</h3>
+              <div class="product-customization">
+                <span class="customization-item">Color: {{ item.color }}</span>
+                <span class="customization-item">Size: {{ item.size }}</span>
+                <span class="customization-item">Material: {{ item.material }}</span>
+              </div>
             </div>
-          </div>
-
-          <div class="order-summary-row">
-            <span>Order ID</span>
-            <span>#{{ selectedOrder.id }}</span>
-          </div>
-          <div class="order-summary-row">
-            <span>Placed On</span>
-            <span>{{ selectedOrder.placedOn }}</span>
-          </div>
-          <div class="order-summary-row">
-            <span>Total Amount</span>
-            <span>₹{{ selectedOrder.amount }}</span>
+            <div class="product-price">${{ item.price }}</div>
           </div>
         </div>
 
-        <!-- status timeline -->
-        <div class="order-card">
-          <h3>Order Status</h3>
+        <!-- Order Timeline -->
+        <div class="order-card timeline-card">
           <div class="status-timeline">
             <div
               *ngFor="let step of orderSteps"
@@ -87,8 +85,8 @@
             >
               <div class="status-dot"></div>
               <div class="status-label">
-                <div>{{ step }}</div>
-                <small *ngIf="isCurrentStatus(selectedOrder, step)">
+                <div class="status-text">{{ step }}</div>
+                <small *ngIf="isCurrentStatus(selectedOrder, step)" class="current-status-label">
                   Current Status
                 </small>
               </div>
@@ -96,41 +94,22 @@
           </div>
         </div>
 
-        <!-- estimated delivery -->
-        <div class="order-card">
-          <div class="order-estimate">
-            <div class="estimate-title">Estimated Delivery</div>
-            <div class="estimate-date">
-              {{ selectedOrder.estimatedDelivery }}
-            </div>
+        <!-- Estimated Delivery -->
+        <div class="order-card delivery-card">
+          <div class="delivery-info">
+            <div class="delivery-label">Estimated Delivery</div>
+            <div class="delivery-date">{{ formatDeliveryDate(selectedOrder.estimatedDelivery) }}</div>
           </div>
         </div>
 
-        <!-- shipment tracking -->
-        <div class="order-card shipment-card">
-          <h3>Shipment Tracking</h3>
-
-          <div class="shipment-row">
-            <div>
-              <p class="label">Carrier</p>
-              <p>{{ selectedOrder.logistics.carrier }}</p>
-            </div>
-            <a href="javascript:void(0)" class="track-link">Track Package</a>
-          </div>
-
-          <div class="shipment-row">
-            <div>
-              <p class="label">Tracking ID</p>
-              <p>{{ selectedOrder.logistics.trackingId }}</p>
-            </div>
-          </div>
-
-          <div class="shipment-row">
-            <div>
-              <p class="label">Current Location</p>
-              <p>{{ selectedOrder.logistics.currentLocation }}</p>
-            </div>
-          </div>
+        <!-- Shipment Tracking -->
+        <div class="order-card tracking-card">
+          <app-delivery-tracking
+            [carrier]="selectedOrder.logistics.carrier"
+            [trackingId]="selectedOrder.logistics.trackingId"
+            [currentLocation]="selectedOrder.logistics.currentLocation"
+            [trackingUrl]="getTrackingUrl(selectedOrder.logistics.carrier, selectedOrder.logistics.trackingId)"
+          ></app-delivery-tracking>
         </div>
       </section>
 

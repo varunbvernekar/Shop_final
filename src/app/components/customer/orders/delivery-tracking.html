@@ -1,0 +1,47 @@
+<!-- src/app/components/customer/orders/delivery-tracking.html -->
+
+<div class="delivery-tracking">
+  <h3 class="tracking-title">Shipment Tracking</h3>
+
+  <div class="tracking-row">
+    <div class="tracking-info">
+      <div class="tracking-label">
+        <span class="tracking-icon">🚚</span>
+        Carrier
+      </div>
+      <div class="tracking-value">{{ carrier }}</div>
+    </div>
+    <a
+      *ngIf="trackingId && trackingId !== '-'"
+      [href]="trackingUrl"
+      target="_blank"
+      class="track-link"
+    >
+      Track Package
+    </a>
+    <span *ngIf="!trackingId || trackingId === '-'" class="track-link-disabled">
+      Tracking not available
+    </span>
+  </div>
+
+  <div class="tracking-row">
+    <div class="tracking-info">
+      <div class="tracking-label">
+        <span class="tracking-icon">📍</span>
+        Current Location
+      </div>
+      <div class="tracking-value">{{ currentLocation }}</div>
+    </div>
+  </div>
+
+  <div class="tracking-row">
+    <div class="tracking-info">
+      <div class="tracking-label">
+        <span class="tracking-icon">🔍</span>
+        Tracking ID
+      </div>
+      <div class="tracking-value">{{ trackingId }}</div>
+    </div>
+  </div>
+</div>
+

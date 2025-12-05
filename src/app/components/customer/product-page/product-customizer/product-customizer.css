@@ -241,3 +241,25 @@
   font-weight: 600;
   color: #0f172a;
 }
+
+.out-of-stock-message {
+  padding: 12px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.customizer-add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #9ca3af;
+}
+
+.customizer-add-btn:disabled:hover {
+  background: #9ca3af;
+  transform: none;
+}

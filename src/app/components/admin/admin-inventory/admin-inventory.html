@@ -1,0 +1,100 @@
+<!-- src/app/components/admin/admin-inventory/admin-inventory.html -->
+
+<div class="inventory-container">
+  <h1 class="inventory-title">Inventory Management</h1>
+  <p class="inventory-subtitle">
+    Monitor stock levels, manage inventory, and bulk import products
+  </p>
+
+  <div class="inventory-main-grid">
+    <!-- Inventory table -->
+    <div class="inventory-card">
+      <h2 class="section-title">Inventory Status</h2>
+
+      <div class="table-wrapper">
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Stock Level</th>
+              <th>Reorder Threshold</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of products">
+              <td>
+                <div class="product-cell">
+                  <div class="product-name">{{ p.name }}</div>
+                  <div class="product-id">{{ p.productId }}</div>
+                </div>
+              </td>
+              <td>
+                <span class="stock-icon">📦</span>
+                {{ p.stockLevel || 0 }} units
+              </td>
+              <td>
+                {{ p.reorderThreshold || 0 }} units
+              </td>
+              <td>
+                <span [class]="getStatusClass(p)">
+                  {{ getStatusLabel(p) }}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons-inline">
+                  <button class="manage-link" (click)="openInventoryEditor(p)">Edit</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bulk Import Card -->
+    <div class="inventory-card">
+      <h2 class="section-title">Bulk Import Inventory</h2>
+      <div class="bulk-import-section">
+        <p class="import-instructions">
+          Upload a CSV file with columns: productId, stockLevel, reorderThreshold
+        </p>
+        <input
+          type="file"
+          accept=".csv"
+          (change)="onFileSelected($event)"
+          class="file-input"
+        />
+        <button
+          class="primary-btn"
+          (click)="importInventory()"
+          [disabled]="!importFile || importInProgress"
+        >
+          {{ importInProgress ? 'Importing...' : 'Import Inventory' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inventory Editor Modal -->
+  <div class="modal-overlay" *ngIf="editingProduct" (click)="closeInventoryEditor()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Edit Inventory - {{ editingProduct.name }}</h3>
+      <div class="form-row">
+        <label>Stock Level</label>
+        <input type="number" [(ngModel)]="editStockLevel" min="0" />
+      </div>
+      <div class="form-row">
+        <label>Reorder Threshold</label>
+        <input type="number" [(ngModel)]="editReorderThreshold" min="0" />
+      </div>
+      <div class="modal-actions">
+        <button class="primary-btn" (click)="saveInventoryChanges()">Save</button>
+        <button class="secondary-btn" (click)="closeInventoryEditor()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+

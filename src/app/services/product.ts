@@ -74,6 +74,44 @@ export class ProductService {
     );
   }
 
+  /** Update an existing product */
+  updateProduct(product: Product): Observable<Product> {
+    if (!product.productId) {
+      throw new Error('Product ID is required to update a product');
+    }
+    const payload: Product & { id: string } = {
+      ...product,
+      id: product.productId
+    };
+    return this.http.put<Product>(`${this.apiUrl}/products/${product.productId}`, payload);
+  }
+
+  /** Update product stock level */
+  updateStock(productId: string, stockLevel: number): Observable<Product> {
+    return this.getProductById(productId).pipe(
+      switchMap(product => {
+        if (!product) {
+          throw new Error('Product not found');
+        }
+        const updated: Product = { ...product, stockLevel };
+        return this.updateProduct(updated);
+      })
+    );
+  }
+
+  /** Update reorder threshold */
+  updateReorderThreshold(productId: string, reorderThreshold: number): Observable<Product> {
+    return this.getProductById(productId).pipe(
+      switchMap(product => {
+        if (!product) {
+          throw new Error('Product not found');
+        }
+        const updated: Product = { ...product, reorderThreshold };
+        return this.updateProduct(updated);
+      })
+    );
+  }
+
   // ---- default custom options (used if db.json doesn't define them) ----
   private getDefaultCustomOptions(): CustomOptionGroup[] {
     return [

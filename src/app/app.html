@@ -1,40 +1,26 @@
 <!-- src/app/app.html -->
 
-<nav class="top-nav" *ngIf="isLoggedIn">
-  <div class="nav-left">
-    <span class="logo-text">ShopSphere</span>
+<div class="app-layout" *ngIf="isLoggedIn">
+  <app-sidebar
+    [isAdmin]="isAdmin"
+    [lowStockCount]="lowStockCount"
+    [cartCount]="cartCount"
+    (openLowStockAlertsEvent)="openLowStockAlerts()"
+    (logoutEvent)="logout()"
+  ></app-sidebar>
 
-    <!-- 👇 Always go to catalog view of products -->
-    <a
-      [routerLink]="['/products']"
-      [queryParams]="{ view: 'catalog' }"
-      routerLinkActive="active-link"
-    >
-      Products
-    </a>
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
 
-    <a routerLink="/orders" routerLinkActive="active-link">Orders</a>
+<div *ngIf="!isLoggedIn">
+  <router-outlet></router-outlet>
+</div>
 
-    <a *ngIf="isAdmin" routerLink="/admin" routerLinkActive="active-link">
-      Dashboard
-    </a>
-  </div>
-
-  <div class="nav-right">
-    <!-- Cart shown ONLY when user is NOT admin (i.e. customer/vendor) -->
-    <button
-      *ngIf="!isAdmin"
-      type="button"
-      class="cart-button"
-      (click)="goToCart()"
-      aria-label="Cart"
-    >
-      <span class="cart-icon">🛒</span>
-      <span *ngIf="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
-    </button>
-
-    <button class="logout-btn" (click)="logout()">Logout</button>
-  </div>
-</nav>
-
-<router-outlet></router-outlet>
+<!-- Low Stock Alerts Modal -->
+<app-low-stock-alerts
+  *ngIf="isAdmin"
+  [isOpen]="showLowStockModal"
+  (closeEvent)="closeLowStockAlerts()"
+></app-low-stock-alerts>

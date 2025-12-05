@@ -67,6 +67,22 @@ export class Cart {
     });
   }
 
+  getAvailableStock(item: CartItem): number {
+    if (item.product.stockLevel === undefined || item.product.stockLevel === null) {
+      return Infinity;
+    }
+    return item.product.stockLevel;
+  }
+
+  isOutOfStock(item: CartItem): boolean {
+    const stock = this.getAvailableStock(item);
+    return stock === 0;
+  }
+
+  getMaxQuantity(item: CartItem): number {
+    return this.getAvailableStock(item);
+  }
+
   /** Called from the "Proceed to Checkout" button */
   handleCheckout(): void {
     if (!this.hasItems) {

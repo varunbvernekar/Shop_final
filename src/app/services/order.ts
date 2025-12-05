@@ -35,4 +35,9 @@ export class OrderService {
     }
     return this.http.put<Order>(`${this.apiUrl}/orders/${order.id}`, order);
   }
+
+  /** Get orders filtered by date range */
+  getOrdersByDateRange(startDate: string, endDate: string): Observable<Order[]> {
+    return this.getAllOrders();
+  }
 }

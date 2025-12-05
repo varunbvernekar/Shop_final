@@ -1,0 +1,75 @@
+/* src/app/components/customer/orders/delivery-tracking.css */
+
+.delivery-tracking {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tracking-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #111827;
+}
+
+.tracking-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.tracking-row:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.tracking-info {
+  flex: 1;
+}
+
+.tracking-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+.tracking-icon {
+  font-size: 14px;
+}
+
+.tracking-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.track-link {
+  font-size: 13px;
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.track-link:hover {
+  background-color: #eef2ff;
+  text-decoration: none;
+}
+
+.track-link-disabled {
+  color: #9ca3af;
+  font-size: 13px;
+  font-style: italic;
+}
+

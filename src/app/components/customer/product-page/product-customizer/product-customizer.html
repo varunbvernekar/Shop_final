@@ -93,10 +93,15 @@
         </div>
       </div>
 
+      <div *ngIf="!isInStock" class="out-of-stock-message">
+        ⚠️ This product is currently out of stock.
+      </div>
+
       <button
         type="button"
         (click)="handleAddToCart()"
         class="customizer-add-btn"
+        [disabled]="!isInStock"
       >
         🛒 Add to Cart
       </button>

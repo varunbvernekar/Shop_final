@@ -1,0 +1,40 @@
+<!-- src/app/components/admin/low-stock-alerts/low-stock-alerts.html -->
+
+<div class="modal-overlay" *ngIf="isOpen" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title-section">
+        <span class="warning-icon">⚠️</span>
+        <h2 class="modal-title">Low Stock Alerts</h2>
+      </div>
+      <button class="close-btn" (click)="close()" aria-label="Close">×</button>
+    </div>
+
+    <div class="modal-subtitle" *ngIf="lowStockProducts.length > 0">
+      {{ lowStockProducts.length }} product(s) need immediate attention
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="lowStockProducts.length === 0" class="no-alerts">
+        <div class="no-alerts-icon">✅</div>
+        <p>All products are well stocked!</p>
+      </div>
+
+      <div class="low-stock-list" *ngIf="lowStockProducts.length > 0">
+        <div class="low-stock-item" *ngFor="let p of lowStockProducts">
+          <div class="low-stock-info">
+            <div class="low-stock-name">{{ p.name }}</div>
+            <div class="low-stock-meta">
+              Stock:
+              <span class="stock-value">{{ p.stockLevel }} units</span>
+              &nbsp; (Threshold:
+              <span class="threshold-value">{{ p.reorderThreshold }}</span>)
+            </div>
+          </div>
+          <button class="reorder-btn" (click)="goToInventory(p)">Reorder Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

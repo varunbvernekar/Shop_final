@@ -44,6 +44,10 @@ export class ProductPage implements OnInit {
     reorderThreshold: 0
   };
 
+  // Image upload for new products
+  selectedImageFile: File | null = null;
+  imagePreview: string | null = null;
+
   constructor(
     private productService: ProductService,
     private authService: AuthService,
@@ -128,6 +132,46 @@ export class ProductPage implements OnInit {
       stockLevel: 0,
       reorderThreshold: 0
     };
+    this.selectedImageFile = null;
+    this.imagePreview = null;
+  }
+
+  // Handle image file selection for new product
+  onImageFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB');
+        return;
+      }
+
+      this.selectedImageFile = file;
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imagePreview = e.target?.result as string;
+        // Set preview image URL to data URL
+        this.newProduct.previewImage = this.imagePreview;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // Clear selected image
+  clearSelectedImage(): void {
+    this.selectedImageFile = null;
+    this.imagePreview = null;
+    this.newProduct.previewImage = '';
   }
 
   // ---- CUSTOMER flow ----
@@ -236,6 +280,9 @@ export class ProductPage implements OnInit {
 
     this.orderService.createOrder(payload).subscribe({
       next: () => {
+        // Update inventory after order confirmation
+        this.updateInventoryForOrder(orderItems);
+        
         alert('Order placed successfully!');
         this.cartService.clear();
         this.view = 'catalog';
@@ -245,6 +292,23 @@ export class ProductPage implements OnInit {
         console.error('Failed to place order', err);
         alert('Failed to place order. Please try again.');
       }
+    });
+  }
+
+  private updateInventoryForOrder(items: Array<{ productId: string; quantity: number }>): void {
+    items.forEach(item => {
+      this.productService.getProductById(item.productId).subscribe({
+        next: product => {
+          if (product && typeof product.stockLevel === 'number') {
+            const newStock = Math.max(0, product.stockLevel - item.quantity);
+            this.productService.updateStock(item.productId, newStock).subscribe({
+              next: () => console.log(`Inventory updated for ${product.name}`),
+              error: err => console.error(`Failed to update inventory for ${product.name}`, err)
+            });
+          }
+        },
+        error: err => console.error(`Failed to get product ${item.productId}`, err)
+      });
     });
   }
 

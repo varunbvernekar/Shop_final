@@ -1,0 +1,109 @@
+<!-- src/app/components/shared/sidebar/sidebar.html -->
+
+<aside class="sidebar" [class.collapsed]="isCollapsed">
+  <div class="sidebar-header">
+    <div class="logo-section">
+      <span class="logo-icon">🛍️</span>
+      <span class="logo-text" *ngIf="!isCollapsed">ShopSphere</span>
+    </div>
+    <button class="toggle-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+      <span *ngIf="!isCollapsed">‹</span>
+      <span *ngIf="isCollapsed">›</span>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <!-- Common Links (Both Admin and Customer) -->
+    <div class="nav-section">
+      <a
+        [routerLink]="['/products']"
+        [queryParams]="{ view: 'catalog' }"
+        routerLinkActive="active"
+        class="nav-item"
+        [title]="isCollapsed ? 'Products' : ''"
+      >
+        <span class="nav-icon">📦</span>
+        <span class="nav-label" *ngIf="!isCollapsed">Products</span>
+      </a>
+
+      <a
+        routerLink="/orders"
+        routerLinkActive="active"
+        class="nav-item"
+        [title]="isCollapsed ? 'Orders' : ''"
+      >
+        <span class="nav-icon">📋</span>
+        <span class="nav-label" *ngIf="!isCollapsed">Orders</span>
+      </a>
+    </div>
+
+    <!-- Admin Only Links -->
+    <div class="nav-section" *ngIf="isAdmin">
+      <a
+        routerLink="/admin"
+        routerLinkActive="active"
+        class="nav-item"
+        [title]="isCollapsed ? 'Dashboard' : ''"
+      >
+        <span class="nav-icon">📊</span>
+        <span class="nav-label" *ngIf="!isCollapsed">Dashboard</span>
+      </a>
+
+      <a
+        routerLink="/admin/inventory"
+        routerLinkActive="active"
+        class="nav-item"
+        [title]="isCollapsed ? 'Inventory' : ''"
+      >
+        <span class="nav-icon">📦</span>
+        <span class="nav-label" *ngIf="!isCollapsed">Inventory</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <!-- Notification icon for low stock alerts (admin only) -->
+    <button
+      *ngIf="isAdmin"
+      type="button"
+      class="notification-item"
+      (click)="openLowStockAlerts()"
+      [title]="isCollapsed ? 'Low Stock Alerts' : ''"
+    >
+      <span class="nav-icon">🔔</span>
+      <span class="nav-label" *ngIf="!isCollapsed">Alerts</span>
+      <span *ngIf="lowStockCount > 0" class="notification-badge">{{ lowStockCount }}</span>
+    </button>
+
+    <!-- Cart shown ONLY when user is NOT admin -->
+    <button
+      *ngIf="!isAdmin"
+      type="button"
+      class="notification-item"
+      (click)="goToCart()"
+      [title]="isCollapsed ? 'Cart' : ''"
+    >
+      <span class="nav-icon">🛒</span>
+      <span class="nav-label" *ngIf="!isCollapsed">Cart</span>
+      <span *ngIf="cartCount > 0" class="notification-badge">{{ cartCount }}</span>
+    </button>
+
+    <!-- Profile shown ONLY when user is NOT admin -->
+    <a
+      *ngIf="!isAdmin"
+      routerLink="/profile"
+      routerLinkActive="active"
+      class="nav-item"
+      [title]="isCollapsed ? 'Profile' : ''"
+    >
+      <span class="nav-icon">👤</span>
+      <span class="nav-label" *ngIf="!isCollapsed">Profile</span>
+    </a>
+
+    <button class="nav-item logout-item" (click)="logout()" [title]="isCollapsed ? 'Logout' : ''">
+      <span class="nav-icon">🚪</span>
+      <span class="nav-label" *ngIf="!isCollapsed">Logout</span>
+    </button>
+  </div>
+</aside>
+

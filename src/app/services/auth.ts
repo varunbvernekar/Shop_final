@@ -70,4 +70,9 @@ export class AuthService {
   isLoggedIn(): boolean {
     return this.currentUser != null;
   }
+
+  /** Update current user in memory */
+  updateCurrentUser(user: User): void {
+    this.currentUser = user;
+  }
 }

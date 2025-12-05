@@ -108,6 +108,16 @@ export class ProductCustomizer implements OnInit {
   }
 
   handleAddToCart(): void {
+    // Check if product is in stock
+    const isInStock = this.product.stockLevel === undefined || 
+                     this.product.stockLevel === null || 
+                     this.product.stockLevel > 0;
+    
+    if (!isInStock) {
+      alert(`${this.product.name} is out of stock. Please select another product.`);
+      return;
+    }
+
     this.addToCart.emit({
       product: this.product,
       customization: {
@@ -120,5 +130,11 @@ export class ProductCustomizer implements OnInit {
 
     this.showSuccess = true;
     setTimeout(() => (this.showSuccess = false), 2000);
+  }
+
+  get isInStock(): boolean {
+    return this.product.stockLevel === undefined || 
+           this.product.stockLevel === null || 
+           this.product.stockLevel > 0;
   }
 }

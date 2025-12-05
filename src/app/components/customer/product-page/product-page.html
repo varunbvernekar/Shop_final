@@ -82,13 +82,49 @@
             </div>
 
             <div class="form-row">
-              <label>Preview Image URL</label>
-              <input
-                type="text"
-                [(ngModel)]="newProduct.previewImage"
-                name="previewImage"
-                placeholder="assets/images/your-image.jpg"
-              />
+              <label>Preview Image</label>
+              <div class="image-upload-container">
+                <div class="image-upload-options">
+                  <div class="upload-option">
+                    <label class="file-upload-label">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        (change)="onImageFileSelected($event)"
+                        class="file-input-hidden"
+                      />
+                      <span class="file-upload-button">📁 Choose File</span>
+                    </label>
+                    <span class="file-name" *ngIf="selectedImageFile">{{ selectedImageFile.name }}</span>
+                    <button
+                      type="button"
+                      class="clear-image-btn"
+                      *ngIf="selectedImageFile"
+                      (click)="clearSelectedImage()"
+                    >
+                      ✕ Clear
+                    </button>
+                  </div>
+                  <div class="or-divider">OR</div>
+                  <div class="url-option">
+                    <input
+                      type="text"
+                      [(ngModel)]="newProduct.previewImage"
+                      name="previewImage"
+                      placeholder="Enter image URL (e.g., assets/images/your-image.jpg)"
+                      class="url-input"
+                    />
+                  </div>
+                </div>
+                <div class="image-preview-container" *ngIf="imagePreview || newProduct.previewImage">
+                  <img
+                    [src]="imagePreview || newProduct.previewImage"
+                    alt="Preview"
+                    class="image-preview"
+                    (error)="onImageError($event)"
+                  />
+                </div>
+              </div>
             </div>
 
             <div class="form-row">
