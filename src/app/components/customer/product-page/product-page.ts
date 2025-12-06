@@ -339,6 +339,12 @@ export class ProductPage implements OnInit {
         // Update inventory after order confirmation
         this.updateInventoryForOrder(orderItems);
         
+        // Trigger low stock count refresh (only in browser)
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('inventoryUpdated'));
+          window.dispatchEvent(new CustomEvent('orderUpdated'));
+        }
+        
         alert('Order placed successfully!');
         this.cartService.clear();
         this.view = 'catalog';

@@ -1,0 +1,67 @@
+<!-- src/app/components/customer/notifications/customer-notifications.html -->
+
+<div class="modal-overlay" *ngIf="isOpen" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title-section">
+        <span class="notification-icon">🔔</span>
+        <h2 class="modal-title">Order & Shipment Updates</h2>
+      </div>
+      <button class="close-btn" (click)="close()" aria-label="Close">×</button>
+    </div>
+
+    <div class="modal-subtitle" *ngIf="notifications.length > 0">
+      {{ unreadCount }} unread update(s) of {{ notifications.length }} total
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="notifications.length === 0" class="no-notifications">
+        <div class="no-notifications-icon">📭</div>
+        <p>No new notifications at this time.</p>
+        <p class="sub-text">You'll be notified when your orders are updated or shipped.</p>
+      </div>
+
+      <div class="notifications-list" *ngIf="notifications.length > 0">
+        <div 
+          class="notification-item" 
+          *ngFor="let notification of notifications" 
+          [style.border-left-color]="getStatusColor(notification.status)"
+          [class.notification-read]="notification.read"
+          (click)="markAsRead(notification)"
+        >
+          <div class="notification-icon-wrapper">
+            <span class="status-icon">{{ getStatusIcon(notification.status) }}</span>
+          </div>
+          <div class="notification-info">
+            <div class="notification-header">
+              <div class="notification-order-info">
+                <div class="notification-order-name">{{ notification.orderName }}</div>
+                <div class="notification-order-number">{{ notification.orderNumber }}</div>
+              </div>
+              <div class="notification-type-badge" [style.background-color]="getStatusColor(notification.status)">
+                {{ notification.type === 'order' ? 'Order Update' : 'Shipment Update' }}
+              </div>
+            </div>
+            <div class="notification-message">{{ notification.message }}</div>
+            <div class="notification-meta">
+              <span class="notification-status" [style.color]="getStatusColor(notification.status)">
+                Status: {{ notification.status }}
+              </span>
+              <span class="notification-timestamp">{{ notification.timestamp }}</span>
+            </div>
+            <div *ngIf="notification.logistics && notification.logistics.trackingId && notification.logistics.trackingId !== '-'" class="notification-tracking">
+              <span class="tracking-label">Tracking:</span>
+              <span class="tracking-id">{{ notification.logistics.trackingId }}</span>
+              <span class="tracking-location">{{ notification.logistics.currentLocation }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer" *ngIf="notifications.length > 0">
+      <button class="view-orders-btn" (click)="goToOrders()">View All Orders</button>
+    </div>
+  </div>
+</div>
+

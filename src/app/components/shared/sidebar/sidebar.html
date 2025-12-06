@@ -75,6 +75,19 @@
       <span *ngIf="lowStockCount > 0" class="notification-badge">{{ lowStockCount }}</span>
     </button>
 
+    <!-- Notifications shown ONLY when user is NOT admin -->
+    <button
+      *ngIf="!isAdmin"
+      type="button"
+      class="notification-item"
+      (click)="openNotifications()"
+      [title]="isCollapsed ? 'Notifications' : ''"
+    >
+      <span class="nav-icon">🔔</span>
+      <span class="nav-label" *ngIf="!isCollapsed">Notifications</span>
+      <span *ngIf="notificationCount > 0" class="notification-badge">{{ notificationCount }}</span>
+    </button>
+
     <!-- Cart shown ONLY when user is NOT admin -->
     <button
       *ngIf="!isAdmin"

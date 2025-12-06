@@ -16,8 +16,10 @@ import { CartService } from '../../../services/cart';
 export class Sidebar {
   @Input() isAdmin: boolean = false;
   @Input() lowStockCount: number = 0;
+  @Input() notificationCount: number = 0;
   @Input() cartCount: number = 0;
   @Output() openLowStockAlertsEvent = new EventEmitter<void>();
+  @Output() openNotificationsEvent = new EventEmitter<void>();
   @Output() logoutEvent = new EventEmitter<void>();
 
   isCollapsed = false;
@@ -33,6 +35,10 @@ export class Sidebar {
 
   openLowStockAlerts(): void {
     this.openLowStockAlertsEvent.emit();
+  }
+
+  openNotifications(): void {
+    this.openNotificationsEvent.emit();
   }
 
   goToCart(): void {

@@ -115,6 +115,11 @@ export class OrdersPage implements OnInit {
         if (oldStatus && oldStatus !== updated.status) {
           this.notifyCustomer(updated);
         }
+
+        // Dispatch event to refresh notification count (only in browser)
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('orderUpdated'));
+        }
       },
       error: err => {
         console.error('Failed to update order', err);

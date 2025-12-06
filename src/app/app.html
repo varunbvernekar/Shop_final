@@ -4,8 +4,10 @@
   <app-sidebar
     [isAdmin]="isAdmin"
     [lowStockCount]="lowStockCount"
+    [notificationCount]="notificationCount"
     [cartCount]="cartCount"
     (openLowStockAlertsEvent)="openLowStockAlerts()"
+    (openNotificationsEvent)="openNotifications()"
     (logoutEvent)="logout()"
   ></app-sidebar>
 
@@ -24,3 +26,10 @@
   [isOpen]="showLowStockModal"
   (closeEvent)="closeLowStockAlerts()"
 ></app-low-stock-alerts>
+
+<!-- Customer Notifications Modal -->
+<app-customer-notifications
+  *ngIf="!isAdmin"
+  [isOpen]="showNotificationsModal"
+  (closeEvent)="closeNotifications()"
+></app-customer-notifications>

@@ -107,8 +107,10 @@ export class AdminInventory implements OnInit {
   }
 
   private triggerLowStockRefresh(): void {
-    // Dispatch a custom event that the app component can listen to
-    window.dispatchEvent(new CustomEvent('inventoryUpdated'));
+    // Dispatch a custom event that the app component can listen to (only in browser)
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('inventoryUpdated'));
+    }
   }
 
   // Bulk Import

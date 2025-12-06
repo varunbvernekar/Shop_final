@@ -83,6 +83,13 @@ export class Cart {
     return this.getAvailableStock(item);
   }
 
+  // Expose Infinity as a property for template use
+  readonly MAX_STOCK = Number.MAX_SAFE_INTEGER;
+  
+  isUnlimitedStock(item: CartItem): boolean {
+    return this.getAvailableStock(item) === Infinity || this.getAvailableStock(item) >= this.MAX_STOCK;
+  }
+
   /** Called from the "Proceed to Checkout" button */
   handleCheckout(): void {
     if (!this.hasItems) {
