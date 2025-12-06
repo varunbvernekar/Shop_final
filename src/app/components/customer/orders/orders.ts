@@ -5,7 +5,7 @@ import { OrderService } from '../../../services/order';
 import { AuthService } from '../../../services/auth';
 import { User } from '../../../models/user';
 import { FormsModule, NgModel } from '@angular/forms';
-import { DeliveryTracking } from './delivery-tracking';
+import { DeliveryTracking } from './delivery-tracking/delivery-tracking';
 
 @Component({
   selector: 'app-orders',
