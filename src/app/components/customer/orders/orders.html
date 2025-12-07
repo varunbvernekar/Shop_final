@@ -47,70 +47,7 @@
 
       <!-- Right: details -->
       <section class="orders-detail" *ngIf="selectedOrder; else emptyState">
-        <!-- Order Header -->
-        <div class="order-header-card">
-          <div class="order-header-info">
-            <h2 class="order-header-title">Order {{ getOrderId(selectedOrder) }}</h2>
-            <p class="order-header-date">Placed on {{ selectedOrder.placedOn }}</p>
-          </div>
-          <button class="order-status-button" [ngClass]="selectedOrder.status">
-            {{ selectedOrder.status }}
-          </button>
-        </div>
-
-        <!-- Product Information -->
-        <div class="order-card product-card" *ngFor="let item of selectedOrder.items">
-          <div class="product-info-container">
-            <img [src]="item.image" alt="Product image" class="product-image" />
-            <div class="product-details">
-              <h3 class="product-name">{{ item.name }}</h3>
-              <div class="product-customization">
-                <span class="customization-item">Color: {{ item.color }}</span>
-                <span class="customization-item">Size: {{ item.size }}</span>
-                <span class="customization-item">Material: {{ item.material }}</span>
-              </div>
-            </div>
-            <div class="product-price">${{ item.price }}</div>
-          </div>
-        </div>
-
-        <!-- Order Timeline -->
-        <div class="order-card timeline-card">
-          <div class="status-timeline">
-            <div
-              *ngFor="let step of orderSteps"
-              class="status-step"
-              [class.completed]="isStepCompleted(selectedOrder, step)"
-              [class.current]="isCurrentStatus(selectedOrder, step)"
-            >
-              <div class="status-dot"></div>
-              <div class="status-label">
-                <div class="status-text">{{ step }}</div>
-                <small *ngIf="isCurrentStatus(selectedOrder, step)" class="current-status-label">
-                  Current Status
-                </small>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Estimated Delivery -->
-        <div class="order-card delivery-card">
-          <div class="delivery-info">
-            <div class="delivery-label">Estimated Delivery</div>
-            <div class="delivery-date">{{ formatDeliveryDate(selectedOrder.estimatedDelivery) }}</div>
-          </div>
-        </div>
-
-        <!-- Shipment Tracking -->
-        <div class="order-card tracking-card">
-          <app-delivery-tracking
-            [carrier]="selectedOrder.logistics.carrier"
-            [trackingId]="selectedOrder.logistics.trackingId"
-            [currentLocation]="selectedOrder.logistics.currentLocation"
-            [trackingUrl]="getTrackingUrl(selectedOrder.logistics.carrier, selectedOrder.logistics.trackingId)"
-          ></app-delivery-tracking>
-        </div>
+        <app-delivery-tracking [order]="selectedOrder"></app-delivery-tracking>
       </section>
 
       <!-- Placeholder when nothing selected -->

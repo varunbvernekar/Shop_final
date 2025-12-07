@@ -58,11 +58,11 @@
       <h2 class="section-title">Bulk Import Inventory</h2>
       <div class="bulk-import-section">
         <p class="import-instructions">
-          Upload a CSV file with columns: productId, stockLevel, reorderThreshold
+          Upload a CSV or Excel file (.csv, .xlsx) with columns: productId, stockLevel, reorderThreshold
         </p>
         <input
           type="file"
-          accept=".csv"
+          accept=".csv,.xlsx,.xls"
           (change)="onFileSelected($event)"
           class="file-input"
         />

@@ -13,7 +13,20 @@
   </div>
 
   <nav class="sidebar-nav">
-    <!-- Common Links (Both Admin and Customer) -->
+   
+    <!-- Admin Only Link -->
+    <div class="nav-section" *ngIf="isAdmin">
+    <a
+        routerLink="/admin"
+        routerLinkActive="active"
+        class="nav-item"
+        [title]="isCollapsed ? 'Dashboard' : ''"
+      >
+        <span class="nav-icon">📊</span>
+        <span class="nav-label" *ngIf="!isCollapsed">Dashboard</span>
+      </a>
+      </div>
+       <!-- Common Links (Both Admin and Customer) -->
     <div class="nav-section">
       <a
         [routerLink]="['/products']"
@@ -37,18 +50,9 @@
       </a>
     </div>
 
-    <!-- Admin Only Links -->
+    <!-- Admin Only Link -->
     <div class="nav-section" *ngIf="isAdmin">
-      <a
-        routerLink="/admin"
-        routerLinkActive="active"
-        class="nav-item"
-        [title]="isCollapsed ? 'Dashboard' : ''"
-      >
-        <span class="nav-icon">📊</span>
-        <span class="nav-label" *ngIf="!isCollapsed">Dashboard</span>
-      </a>
-
+      
       <a
         routerLink="/admin/inventory"
         routerLinkActive="active"

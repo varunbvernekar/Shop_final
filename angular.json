@@ -22,7 +22,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+                
+              },
+              "src/favicon.ico",
+            "src/assets",
+            "src/assets/images"
             ],
             "styles": [
               "src/styles.css"

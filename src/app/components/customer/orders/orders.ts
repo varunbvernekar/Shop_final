@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, NgIf, NgLocalization } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Order, OrderStatus } from '../../../models/order';
 import { OrderService } from '../../../services/order';
 import { AuthService } from '../../../services/auth';
 import { User } from '../../../models/user';
-import { FormsModule, NgModel } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { DeliveryTracking } from './delivery-tracking/delivery-tracking';
 
 @Component({
@@ -77,18 +77,6 @@ export class OrdersPage implements OnInit {
     return order.items.reduce((sum, item) => sum + item.quantity, 0);
   }
 
-  isStepCompleted(order: Order, step: string): boolean {
-    const orderStates = this.orderSteps;
-    return (
-      orderStates.indexOf(step as OrderStatus) <=
-      orderStates.indexOf(order.status)
-    );
-  }
-
-  isCurrentStatus(order: Order, step: string): boolean {
-    return order.status === (step as OrderStatus);
-  }
-
   // ADMIN VIEW ACTIONS
 
   onAdminStatusChange(order: Order, newStatus: OrderStatus): void {
@@ -135,24 +123,6 @@ export class OrdersPage implements OnInit {
     alert(`Customer has been notified about order #${order.id} status change to ${order.status}`);
   }
 
-  getTrackingUrl(carrier: string, trackingId: string): string {
-    // Fake integration - just provides a tracking link
-    // In a real app, this would use the carrier's API
-    const carrierLower = carrier.toLowerCase();
-    if (carrierLower.includes('shiprocket') || carrierLower.includes('delhivery')) {
-      return `https://www.shiprocket.in/tracking/${trackingId}`;
-    } else if (carrierLower.includes('fedex')) {
-      return `https://www.fedex.com/apps/fedextrack/?tracknumbers=${trackingId}`;
-    } else if (carrierLower.includes('ups')) {
-      return `https://www.ups.com/track?tracknum=${trackingId}`;
-    } else if (carrierLower.includes('dhl')) {
-      return `https://www.dhl.com/en/express/tracking.html?AWB=${trackingId}`;
-    } else {
-      // Generic tracking URL
-      return `https://www.17track.net/en/track?nums=${trackingId}`;
-    }
-  }
-
   getStatusIcon(status: OrderStatus): string {
     switch (status) {
       case 'Confirmed':
@@ -166,22 +136,6 @@ export class OrdersPage implements OnInit {
       default:
         return '📦';
     }
-  }
-
-  formatDeliveryDate(dateStr: string): string {
-    // Convert date format from "MM/DD/YYYY" to "Day, Month DD, YYYY"
-    // This is a simple formatter - you might want to use a date library
-    const parts = dateStr.split('/');
-    if (parts.length === 3) {
-      const month = parseInt(parts[0], 10);
-      const day = parseInt(parts[1], 10);
-      const year = parseInt(parts[2], 10);
-      const date = new Date(year, month - 1, day);
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      return `${days[date.getDay()]}, ${months[date.getMonth()]} ${day}, ${year}`;
-    }
-    return dateStr;
   }
 
   getOrderId(order: Order): string {
