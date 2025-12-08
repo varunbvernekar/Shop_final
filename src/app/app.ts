@@ -10,12 +10,13 @@ import { Subscription } from 'rxjs';
 import { LowStockAlerts } from './shared/components/low-stock-alerts/low-stock-alerts';
 import { CustomerNotifications } from './shared/components/customer-notifications/customer-notifications';
 import { Navbar } from './shared/components/navbar/navbar';
+import { Footer } from './shared/components/footer/footer';
 import { OrderService } from './core/services/order';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, LowStockAlerts, CustomerNotifications, Navbar],
+  imports: [CommonModule, RouterOutlet, LowStockAlerts, CustomerNotifications, Navbar, Footer],
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
