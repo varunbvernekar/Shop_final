@@ -4,12 +4,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CartService } from '../../core/services/cart';
-import { AuthService } from '../../core/services/auth';
-import { OrderService } from '../../core/services/order';
-import { ProductService } from '../../core/services/product';
-import { Order, OrderStatus, Address } from '../../core/models/order';
-import { CartItem } from '../../core/models/cart-item';
+import { CartService } from '../../services/cart';
+import { AuthService } from '../../services/auth';
+import { OrderService } from '../../services/order';
+import { ProductService } from '../../services/product';
+import { Order, OrderStatus, Address } from '../../models/order';
+import { CartItem } from '../../models/cart-item';
 
 @Component({
   selector: 'app-payment',

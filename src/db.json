@@ -49,7 +49,7 @@
       "role": "CUSTOMER",
       "dateOfBirth": "2025-12-11",
       "gender": "Male",
-      "preferredLanguage": "English"
+      "preferredLanguage": "Spanish"
     },
     {
       "id": "7",
@@ -155,12 +155,10 @@
           "type": "colour",
           "values": [
             "Silver",
-            "Gold",
             "Rose Gold"
           ],
           "priceAdjustment": {
             "Silver": 0,
-            "Gold": 15,
             "Rose Gold": 10
           }
         },
@@ -246,7 +244,7 @@
       "category": "Kitchen",
       "basePrice": 45,
       "previewImage": "/assets/images/wooden_tray.jpg",
-      "stockLevel": 15,
+      "stockLevel": 14,
       "reorderThreshold": 6,
       "isActive": false,
       "customOptions": [
@@ -1353,6 +1351,38 @@
         "country": "India"
       },
       "id": "phfEI2i"
+    },
+    {
+      "userId": "6",
+      "placedOn": "15/12/2025",
+      "amount": 64.5,
+      "status": "Confirmed",
+      "items": [
+        {
+          "productId": "P006",
+          "name": "Wooden Serving Tray",
+          "image": "/assets/images/wooden_tray.jpg",
+          "quantity": 1,
+          "color": "Silver",
+          "size": "Medium",
+          "material": "Standard",
+          "price": 45
+        }
+      ],
+      "estimatedDelivery": "22/12/2025",
+      "logistics": {
+        "carrier": "Not assigned",
+        "trackingId": "-",
+        "currentLocation": "Order confirmed"
+      },
+      "deliveryAddress": {
+        "street": "LIG 6 2nd phase housing board",
+        "city": "Chikmagalur",
+        "state": "Karnataka",
+        "zipCode": "577102",
+        "country": "India"
+      },
+      "id": "jezjzJr"
     }
   ]
 }

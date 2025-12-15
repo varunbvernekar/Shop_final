@@ -2,8 +2,8 @@
 
 import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Order, OrderStatus } from '../../../core/models/order';
-import { DeliveryService } from '../../../core/services/delivery';
+import { Order, OrderStatus } from '../../../models/order';
+import { DeliveryService } from '../../../services/delivery';
 
 @Component({
   selector: 'app-delivery-tracking',

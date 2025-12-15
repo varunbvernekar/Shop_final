@@ -5,12 +5,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Product } from '../../core/models/product';
-import { UserRole, User } from '../../core/models/user';
-import { ProductService } from '../../core/services/product';
-import { AuthService } from '../../core/services/auth';
-import { CartItem } from '../../core/models/cart-item';
-import { CartService } from '../../core/services/cart';
+import { Product } from '../../models/product';
+import { UserRole, User } from '../../models/user';
+import { ProductService } from '../../services/product';
+import { AuthService } from '../../services/auth';
+import { CartItem } from '../../models/cart-item';
+import { CartService } from '../../services/cart';
 import { ProductCatalog } from './product-catalog/product-catalog';
 import { ProductCustomizer } from './product-customizer/product-customizer';
 import { Cart } from './cart/cart';

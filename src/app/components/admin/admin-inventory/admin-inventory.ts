@@ -3,9 +3,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { InventoryService } from '../../../core/services/inventory';
-import { ProductService } from '../../../core/services/product';
-import { Product } from '../../../core/models/product';
+import { InventoryService } from '../../../services/inventory';
+import { ProductService } from '../../../services/product';
+import { Product } from '../../../models/product';
 
 import { RouterLink } from '@angular/router';
 

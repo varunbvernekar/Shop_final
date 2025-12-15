@@ -9,8 +9,8 @@ import { ProductPage } from './components/shop/product-page';
 import { OrdersPage } from './components/orders/orders';
 import { Profile } from './components/profile/profile';
 import { Payment } from './components/payment/payment';
-import { authGuard } from './core/guards/auth-guard';
-import { adminGuard } from './core/guards/admin-guard';
+import { authGuard } from './guards/auth-guard';
+import { adminGuard } from './guards/admin-guard';
 import { AdminDashboard } from './components/admin/admin-dashboard/admin-dashboard';
 import { AdminInventory } from './components/admin/admin-inventory/admin-inventory';
 

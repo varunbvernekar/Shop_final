@@ -3,9 +3,9 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Product } from '../../../core/models/product';
-import { ProductService } from '../../../core/services/product';
-import { InventoryService } from '../../../core/services/inventory';
+import { Product } from '../../../models/product';
+import { ProductService } from '../../../services/product';
+import { InventoryService } from '../../../services/inventory';
 import { Subscription } from 'rxjs';
 
 @Component({

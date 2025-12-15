@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Product } from '../../../core/models/product';
+import { Product } from '../../../models/product';
 
 @Component({
   selector: 'app-product-customizer',

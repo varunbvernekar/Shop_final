@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Product, CustomOptionGroup, CustomOptionType } from '../../../core/models/product';
-import { ProductService } from '../../../core/services/product';
+import { Product, CustomOptionGroup, CustomOptionType } from '../../../models/product';
+import { ProductService } from '../../../services/product';
 
 @Component({
     selector: 'app-customize-product',

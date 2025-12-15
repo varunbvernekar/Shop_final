@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Order, OrderStatus } from '../../core/models/order';
-import { OrderService } from '../../core/services/order';
-import { AuthService } from '../../core/services/auth';
-import { User } from '../../core/models/user';
+import { Order, OrderStatus } from '../../models/order';
+import { OrderService } from '../../services/order';
+import { AuthService } from '../../services/auth';
+import { User } from '../../models/user';
 import { FormsModule } from '@angular/forms';
 import { DeliveryTracking } from './delivery-tracking/delivery-tracking';
 

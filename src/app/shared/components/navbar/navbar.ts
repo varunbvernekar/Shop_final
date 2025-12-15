@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProductService } from '../../../core/services/product';
+import { ProductService } from '../../../services/product';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({

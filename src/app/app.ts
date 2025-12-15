@@ -3,17 +3,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from './core/services/auth';
-import { CartService } from './core/services/cart';
-import { ProductService } from './core/services/product';
+import { AuthService } from './services/auth';
+import { CartService } from './services/cart';
+import { ProductService } from './services/product';
 import { Subscription } from 'rxjs';
 import { LowStockAlerts } from './shared/components/low-stock-alerts/low-stock-alerts';
 import { CustomerNotifications } from './shared/components/customer-notifications/customer-notifications';
 import { Navbar } from './shared/components/navbar/navbar';
 import { Footer } from './shared/components/footer/footer';
-import { OrderService } from './core/services/order';
+import { OrderService } from './services/order';
 
-import { NotificationService } from './core/services/notification';
+import { NotificationService } from './services/notification';
 
 @Component({
   selector: 'app-root',

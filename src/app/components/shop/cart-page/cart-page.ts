@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { Cart } from '../cart/cart';
-import { CartService } from '../../../core/services/cart';
-import { Product } from '../../../core/models/product';
+import { CartService } from '../../../services/cart';
+import { Product } from '../../../models/product';
 
 @Component({
     selector: 'app-cart-page',

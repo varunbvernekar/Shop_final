@@ -3,10 +3,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Product } from '../../../core/models/product';
-import { ProductService } from '../../../core/services/product';
-import { OrderService } from '../../../core/services/order';
-import { Order } from '../../../core/models/order';
+import { Product } from '../../../models/product';
+import { ProductService } from '../../../services/product';
+import { OrderService } from '../../../services/order';
+import { Order } from '../../../models/order';
 
 interface RepeatedProductReportItem {
   name: string;

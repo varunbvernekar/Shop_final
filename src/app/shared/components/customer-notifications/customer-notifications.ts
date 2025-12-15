@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { OrderStatus } from '../../../core/models/order';
-import { AuthService } from '../../../core/services/auth';
-import { NotificationService, NotificationItem } from '../../../core/services/notification';
+import { OrderStatus } from '../../../models/order';
+import { AuthService } from '../../../services/auth';
+import { NotificationService, NotificationItem } from '../../../services/notification';
 import { Subscription } from 'rxjs';
 
 @Component({

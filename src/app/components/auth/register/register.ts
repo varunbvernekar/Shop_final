@@ -3,8 +3,8 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
 
-import { AuthService } from '../../../core/services/auth';
-import { User, UserRole } from '../../../core/models/user';
+import { AuthService } from '../../../services/auth';
+import { User, UserRole } from '../../../models/user';
 
 @Component({
   selector: 'app-register',

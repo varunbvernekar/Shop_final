@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CartItem } from '../../../core/models/cart-item';
+import { CartItem } from '../../../models/cart-item';
 
 @Component({
   selector: 'app-cart',
