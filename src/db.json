@@ -295,7 +295,7 @@
       "category": "Home Decor",
       "basePrice": 45,
       "previewImage": "/assets/images/macrame.png",
-      "stockLevel": 8,
+      "stockLevel": 7,
       "reorderThreshold": 5,
       "isActive": true,
       "productId": "P009",
@@ -1383,6 +1383,38 @@
         "country": "India"
       },
       "id": "jezjzJr"
+    },
+    {
+      "userId": "6",
+      "placedOn": "15/12/2025",
+      "amount": 75.5,
+      "status": "Confirmed",
+      "items": [
+        {
+          "productId": "P009",
+          "name": "Boho Macrame Wall Hanging",
+          "image": "/assets/images/macrame.png",
+          "quantity": 1,
+          "color": "Silver",
+          "size": "Large",
+          "material": "Standard",
+          "price": 55
+        }
+      ],
+      "estimatedDelivery": "22/12/2025",
+      "logistics": {
+        "carrier": "Not assigned",
+        "trackingId": "-",
+        "currentLocation": "Order confirmed"
+      },
+      "deliveryAddress": {
+        "street": "LIG 6 2nd phase housing board",
+        "city": "Chikmagalur",
+        "state": "Karnataka",
+        "zipCode": "577102",
+        "country": "India"
+      },
+      "id": "Tj24Lf-"
     }
   ]
 }

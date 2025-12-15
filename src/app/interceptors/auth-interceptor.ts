@@ -17,7 +17,20 @@ export class AuthInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     // Get token from AuthService
-    const token = this.authService.getToken();
+    const user = this.authService.getCurrentUser();
+    let token = this.authService.getToken();
+
+    // HARDCODED TOKENS FOR DEMO/TESTING
+    const ADMIN_TOKEN = 'hardcoded-admin-jwt-token-12345';
+    const CUSTOMER_TOKEN = 'hardcoded-customer-jwt-token-67890';
+
+    if (user) {
+      if (user.role === 'ADMIN') {
+        token = ADMIN_TOKEN;
+      } else if (user.role === 'CUSTOMER') {
+        token = CUSTOMER_TOKEN;
+      }
+    }
 
     if (token) {
       // Clone request and attach Authorization header

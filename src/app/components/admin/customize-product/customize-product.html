@@ -5,7 +5,7 @@
     </div>
 
     <div class="products-grid">
-        <div class="product-card" *ngFor="let p of products">
+        <div class="product-card" *ngFor="let p of paginatedProducts">
             <div class="product-image">
                 <img [src]="p.previewImage || 'assets/images/placeholder.jpg'" [alt]="p.name">
             </div>
@@ -21,6 +21,23 @@
                 Customize
             </button>
         </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="catalog-pagination" *ngIf="totalPages > 1">
+        <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-btn">
+            <span class="material-symbols-rounded">chevron_left</span>
+            Previous
+        </button>
+
+        <span class="pagination-info">
+            Page {{ currentPage }} of {{ totalPages }}
+        </span>
+
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-btn">
+            Next
+            <span class="material-symbols-rounded">chevron_right</span>
+        </button>
     </div>
 </div>
 
